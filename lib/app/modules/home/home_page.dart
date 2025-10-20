@@ -65,9 +65,9 @@ class _HomePageContentState extends State<HomePageContent> {
         if (selectedCategory != null) {
           popularJobs = JobDataService.getJobsByCategory(selectedCategory!);
         } else {
-          popularJobs = JobDataService.getPopularJobs(limit: 3);
+          popularJobs = JobDataService.getPopularJobs(limit: 4);
         }
-        recommendationJobs = JobDataService.getRandomJobs(3);
+        recommendationJobs = JobDataService.getRandomJobs(5);
         isLoading = false;
       });
     });
@@ -118,38 +118,82 @@ class _HomePageContentState extends State<HomePageContent> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final horizontalPadding =
+        screenWidth < 400
+            ? 10.0
+            : screenWidth < 600
+            ? 18.0
+            : 35.0;
+    final verticalPaddingTop =
+        screenWidth < 400
+            ? 20.0
+            : screenWidth < 600
+            ? 35.0
+            : 60.0;
+    final verticalPaddingBottom =
+        screenWidth < 400
+            ? 5.0
+            : screenWidth < 600
+            ? 8.0
+            : 10.0;
+    final titleFontSize =
+        screenWidth < 400
+            ? 20.0
+            : screenWidth < 600
+            ? 26.0
+            : 32.0;
+    final searchBarSpacing =
+        screenWidth < 400
+            ? 14.0
+            : screenWidth < 600
+            ? 22.0
+            : 35.0;
+    final categorySpacing =
+        screenWidth < 400
+            ? 12.0
+            : screenWidth < 600
+            ? 18.0
+            : 30.0;
+    final popularSpacing =
+        screenWidth < 400
+            ? 18.0
+            : screenWidth < 600
+            ? 28.0
+            : 45.0;
+    final recommendationSpacing =
+        screenWidth < 400
+            ? 10.0
+            : screenWidth < 600
+            ? 20.0
+            : 40.0;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(35, 60, 35, 10),
+          padding: EdgeInsets.fromLTRB(
+            horizontalPadding,
+            verticalPaddingTop,
+            horizontalPadding,
+            verticalPaddingBottom,
+          ),
           child: Column(
             children: [
-              // AppBar
               _buildAppBar(),
-
-              // Title
               SizedBox(height: 15),
-              _buildTitle(),
-
-              // Search Bar
-              SizedBox(height: 35),
+              _buildTitle(fontSize: titleFontSize),
+              SizedBox(height: searchBarSpacing),
               CustomSearchBar(
                 hintText: "Search your dream job here",
                 readOnly: true,
-                onChanged: (value) => context.go('/search'),
                 onTap: () => context.go('/search'),
               ),
-              // Category Menu
-              SizedBox(height: 30),
+              SizedBox(height: categorySpacing),
               _buildCategoryMenu(),
-
-              // Popular Vacancies
-              SizedBox(height: 45),
+              SizedBox(height: popularSpacing),
               _buildPopularVacancies(),
-
-              // Recommendation Jobs
-              SizedBox(height: 40),
+              SizedBox(height: recommendationSpacing),
               _buildRecommendationJobs(),
             ],
           ),
@@ -227,13 +271,13 @@ class _HomePageContentState extends State<HomePageContent> {
     );
   }
 
-  Widget _buildTitle() {
+  Widget _buildTitle({double fontSize = 32}) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           "Find Your",
-          style: TextStyle(fontSize: 32, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w500),
         ),
         SizedBox(width: 5),
         ShaderMask(
@@ -249,7 +293,7 @@ class _HomePageContentState extends State<HomePageContent> {
           child: Text(
             "Perfect Job",
             style: TextStyle(
-              fontSize: 32,
+              fontSize: fontSize,
               fontWeight: FontWeight.w500,
               color: Colors.white,
             ),
@@ -382,7 +426,7 @@ class _HomePageContentState extends State<HomePageContent> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
-                  popularJobs.length.clamp(0, 4),
+                  popularJobs.length.clamp(0, 3),
                   (index) => Container(
                     width: 18,
                     height: 7,

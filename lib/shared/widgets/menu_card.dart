@@ -15,13 +15,41 @@ class MenuCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final horizontalPadding =
+        screenWidth < 400
+            ? 6.0
+            : screenWidth < 600
+            ? 8.0
+            : 10.0;
+    final verticalPadding =
+        screenWidth < 400
+            ? 6.0
+            : screenWidth < 600
+            ? 8.0
+            : 10.0;
+    final borderRadius =
+        screenWidth < 400
+            ? 8.0
+            : screenWidth < 600
+            ? 10.0
+            : 12.0;
+    final fontSize =
+        screenWidth < 400
+            ? 11.0
+            : screenWidth < 600
+            ? 13.0
+            : 14.0;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        padding: EdgeInsets.symmetric(
+          horizontal: horizontalPadding,
+          vertical: verticalPadding,
+        ),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primaryBlue : Color(0xFFF3F4F6),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(borderRadius),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -29,7 +57,7 @@ class MenuCard extends StatelessWidget {
             Text(
               title,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: fontSize,
                 fontWeight: FontWeight.w500,
                 color: isSelected ? Colors.white : Color(0xFF6B7280),
               ),

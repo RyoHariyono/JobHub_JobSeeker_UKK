@@ -19,8 +19,27 @@ class CustomSearchBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final horizontalPadding =
+        screenWidth < 400
+            ? 10.0
+            : screenWidth < 600
+            ? 16.0
+            : 20.0;
+    final iconSize =
+        screenWidth < 400
+            ? 14.0
+            : screenWidth < 600
+            ? 15.0
+            : 17.0;
+    final fontSize =
+        screenWidth < 400
+            ? 12.0
+            : screenWidth < 600
+            ? 13.0
+            : 14.0;
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
@@ -28,7 +47,7 @@ class CustomSearchBar extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(LucideIcons.search, color: Color(0xFF6B7280), size: 17),
+          Icon(LucideIcons.search, color: Color(0xFF6B7280), size: iconSize),
           SizedBox(width: 8),
           Expanded(
             child: TextField(
@@ -38,7 +57,10 @@ class CustomSearchBar extends StatelessWidget {
               readOnly: readOnly,
               decoration: InputDecoration(
                 hintText: hintText,
-                hintStyle: TextStyle(color: Color(0xFF6B7280), fontSize: 14),
+                hintStyle: TextStyle(
+                  color: Color(0xFF6B7280),
+                  fontSize: fontSize,
+                ),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.zero,
               ),

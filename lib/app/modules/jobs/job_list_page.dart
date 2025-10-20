@@ -58,12 +58,51 @@ class _JobListPageState extends State<JobListPage> {
     });
   }
 
+  double _getHorizontalPadding(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 1200) return 120;
+    if (width > 768) return 50;
+    if (width > 600) return 35;
+    if (width > 400) return 18;
+    return 10;
+  }
+
+  double _getAppBarTitleFontSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 18;
+    if (width > 600) return 17;
+    if (width > 400) return 16;
+    return 14;
+  }
+
+  double _getAppBarSubtitleFontSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 16;
+    if (width > 600) return 15;
+    if (width > 400) return 14;
+    return 12;
+  }
+
+  double _getAppBarHeight(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 80;
+    if (width > 600) return 75;
+    return 70;
+  }
+
+  double _getCardLoadingHeight(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 180;
+    if (width > 600) return 170;
+    return 165;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        toolbarHeight: 70,
+        toolbarHeight: _getAppBarHeight(context),
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -81,7 +120,7 @@ class _JobListPageState extends State<JobListPage> {
             Text(
               "See more recommendation",
               style: TextStyle(
-                fontSize: 16,
+                fontSize: _getAppBarTitleFontSize(context),
                 fontWeight: FontWeight.w600,
                 color: AppColors.darkGrey,
               ),
@@ -91,7 +130,7 @@ class _JobListPageState extends State<JobListPage> {
               widget.categoryTitle ?? "All Jobs",
               style: TextStyle(
                 color: AppColors.mediumGrey,
-                fontSize: 14,
+                fontSize: _getAppBarSubtitleFontSize(context),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -102,7 +141,9 @@ class _JobListPageState extends State<JobListPage> {
       body:
           isLoading
               ? Padding(
-                padding: EdgeInsets.symmetric(horizontal: 35),
+                padding: EdgeInsets.symmetric(
+                  horizontal: _getHorizontalPadding(context),
+                ),
                 child: ListView.builder(
                   itemCount: 8,
                   itemBuilder:
@@ -112,7 +153,7 @@ class _JobListPageState extends State<JobListPage> {
                           top: index == 0 ? 20 : 0,
                         ),
                         child: CardLoading(
-                          height: 165,
+                          height: _getCardLoadingHeight(context),
                           borderRadius: BorderRadius.all(Radius.circular(12)),
                         ),
                       ),
@@ -154,7 +195,9 @@ class _JobListPageState extends State<JobListPage> {
                   SizedBox(height: 10),
                   Expanded(
                     child: ListView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: 35),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: _getHorizontalPadding(context),
+                      ),
                       itemCount: jobs.length,
                       itemBuilder: (context, index) {
                         final job = jobs[index];

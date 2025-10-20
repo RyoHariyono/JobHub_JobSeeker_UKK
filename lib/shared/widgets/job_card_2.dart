@@ -19,11 +19,97 @@ class JobCard2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final padding =
+        showFullDetails
+            ? (screenWidth < 400
+                ? 12.0
+                : screenWidth < 600
+                ? 18.0
+                : 25.0)
+            : (screenWidth < 400
+                ? 8.0
+                : screenWidth < 600
+                ? 12.0
+                : 15.0);
+    final logoSize =
+        screenWidth < 400
+            ? 28.0
+            : screenWidth < 600
+            ? 34.0
+            : 40.0;
+    final borderRadius =
+        screenWidth < 400
+            ? 6.0
+            : screenWidth < 600
+            ? 8.0
+            : 12.0;
+    final titleFontSize =
+        screenWidth < 400
+            ? 12.0
+            : screenWidth < 600
+            ? 14.0
+            : 15.0;
+    final companyFontSize =
+        screenWidth < 400
+            ? 8.0
+            : screenWidth < 600
+            ? 9.0
+            : 10.0;
+    final tagFontSize =
+        screenWidth < 400
+            ? 8.0
+            : screenWidth < 600
+            ? 9.0
+            : 10.0;
+    final tagPadding =
+        screenWidth < 400
+            ? 6.0
+            : screenWidth < 600
+            ? 8.0
+            : 10.0;
+    final tagSpacing =
+        screenWidth < 400
+            ? 6.0
+            : screenWidth < 600
+            ? 8.0
+            : 12.0;
+    final bookmarkSize =
+        screenWidth < 400
+            ? 16.0
+            : screenWidth < 600
+            ? 18.0
+            : 20.0;
+    final rowSpacing =
+        showFullDetails
+            ? (screenWidth < 400
+                ? 10.0
+                : screenWidth < 600
+                ? 13.0
+                : 16.0)
+            : (screenWidth < 400
+                ? 8.0
+                : screenWidth < 600
+                ? 10.0
+                : 12.0);
+    final salaryFontSize =
+        showFullDetails
+            ? (screenWidth < 400
+                ? 10.0
+                : screenWidth < 600
+                ? 11.0
+                : 12.0)
+            : (screenWidth < 400
+                ? 8.0
+                : screenWidth < 600
+                ? 9.0
+                : 10.0);
+
     return Container(
-      padding: EdgeInsets.all(showFullDetails ? 25 : 15),
+      padding: EdgeInsets.all(padding),
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(borderRadius),
         color: Colors.white,
         boxShadow: [
           BoxShadow(
@@ -49,33 +135,33 @@ class JobCard2 extends StatelessWidget {
                     children: [
                       // Company logo
                       Container(
-                        width: 40,
-                        height: 40,
+                        width: logoSize,
+                        height: logoSize,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(borderRadius),
                           border: Border.all(
                             color: Color(0xFFE5E7EB),
                             width: 1,
                           ),
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(borderRadius),
                           child: Image.asset(
                             job.company.logoUrl,
-                            width: 40,
-                            height: 40,
+                            width: borderRadius,
+                            height: borderRadius,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Icon(
                                 LucideIcons.building,
                                 color: Color(0xFF6B7280),
-                                size: 20,
+                                size: bookmarkSize,
                               );
                             },
                           ),
                         ),
                       ),
-                      SizedBox(width: 12),
+                      SizedBox(width: tagSpacing),
                       // Job title and company name
                       Expanded(
                         child: Column(
@@ -85,7 +171,7 @@ class JobCard2 extends StatelessWidget {
                             Text(
                               job.title,
                               style: TextStyle(
-                                fontSize: 15,
+                                fontSize: titleFontSize,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.darkGrey,
                               ),
@@ -96,7 +182,7 @@ class JobCard2 extends StatelessWidget {
                             Text(
                               job.company.name,
                               style: TextStyle(
-                                fontSize: 10,
+                                fontSize: companyFontSize,
                                 fontWeight: FontWeight.w400,
                                 color: AppColors.mediumGrey,
                               ),
@@ -115,7 +201,7 @@ class JobCard2 extends StatelessWidget {
                     onTap: onBookmarkTap,
                     child: Icon(
                       job.isBookmarked ? Icons.bookmark : LucideIcons.bookmark,
-                      size: 20,
+                      size: bookmarkSize,
                       color:
                           job.isBookmarked
                               ? AppColors.red
@@ -127,53 +213,62 @@ class JobCard2 extends StatelessWidget {
             ),
 
             if (showFullDetails) ...[
-              SizedBox(height: 16),
+              SizedBox(height: rowSpacing),
               // Tags/Categories
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: tagPadding,
+                      vertical: tagPadding,
+                    ),
                     decoration: BoxDecoration(
                       color: Color(0xFFF3F4F6),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(borderRadius),
                     ),
                     child: Text(
                       job.categoryName,
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: tagFontSize,
                         fontWeight: FontWeight.w500,
                         color: AppColors.darkGrey,
                       ),
                     ),
                   ),
-                  SizedBox(width: 12),
+                  SizedBox(width: tagSpacing),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: tagPadding,
+                      vertical: tagPadding,
+                    ),
                     decoration: BoxDecoration(
                       color: Color(0xFFF3F4F6),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(borderRadius),
                     ),
                     child: Text(
                       job.typeName,
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: tagFontSize,
                         fontWeight: FontWeight.w500,
                         color: AppColors.darkGrey,
                       ),
                     ),
                   ),
-                  SizedBox(width: 12),
+                  SizedBox(width: tagSpacing),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: tagPadding,
+                      vertical: tagPadding,
+                    ),
                     decoration: BoxDecoration(
                       color: Color(0xFFF3F4F6),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(borderRadius),
                     ),
                     child: Text(
                       job.daysAgo,
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: tagFontSize,
                         fontWeight: FontWeight.w500,
                         color: AppColors.darkGrey,
                       ),
@@ -181,9 +276,9 @@ class JobCard2 extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 16),
+              SizedBox(height: rowSpacing),
             ] else ...[
-              SizedBox(height: 12),
+              SizedBox(height: rowSpacing - 4),
             ],
 
             // Location and salary
@@ -195,7 +290,7 @@ class JobCard2 extends StatelessWidget {
                   child: Text(
                     job.location,
                     style: TextStyle(
-                      fontSize: showFullDetails ? 12 : 10,
+                      fontSize: salaryFontSize,
                       fontWeight: FontWeight.w500,
                       color:
                           showFullDetails
@@ -211,7 +306,7 @@ class JobCard2 extends StatelessWidget {
                     Text(
                       job.salaryRange,
                       style: TextStyle(
-                        fontSize: showFullDetails ? 12 : 10,
+                        fontSize: salaryFontSize,
                         fontWeight: FontWeight.bold,
                         color:
                             showFullDetails
@@ -222,7 +317,7 @@ class JobCard2 extends StatelessWidget {
                     Text(
                       "/month",
                       style: TextStyle(
-                        fontSize: showFullDetails ? 12 : 10,
+                        fontSize: salaryFontSize,
                         fontWeight: FontWeight.w400,
                         color:
                             showFullDetails
