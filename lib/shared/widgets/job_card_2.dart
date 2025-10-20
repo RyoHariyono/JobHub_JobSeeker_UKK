@@ -19,23 +19,23 @@ class JobCard2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(showFullDetails ? 25 : 15),
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Color(0xFF5F7394).withOpacity(0.14),
-              offset: Offset(0, 6),
-              blurRadius: 20,
-              spreadRadius: 0,
-            ),
-          ],
-        ),
+    return Container(
+      padding: EdgeInsets.all(showFullDetails ? 25 : 15),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Color(0xFF5F7394).withOpacity(0.14),
+            offset: Offset(0, 6),
+            blurRadius: 20,
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: GestureDetector(
+        onTap: onTap,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -110,13 +110,17 @@ class JobCard2 extends StatelessWidget {
                   ),
                 ),
                 // Bookmark icon
-                GestureDetector(
-                  onTap: onBookmarkTap,
-                  child: Icon(
-                    job.isBookmarked ? Icons.bookmark : LucideIcons.bookmark,
-                    size: 20,
-                    color:
-                        job.isBookmarked ? AppColors.red : AppColors.mediumGrey,
+                AbsorbPointer(
+                  child: GestureDetector(
+                    onTap: onBookmarkTap,
+                    child: Icon(
+                      job.isBookmarked ? Icons.bookmark : LucideIcons.bookmark,
+                      size: 20,
+                      color:
+                          job.isBookmarked
+                              ? AppColors.red
+                              : AppColors.mediumGrey,
+                    ),
                   ),
                 ),
               ],

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/application/application_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/home/home_page.dart';
+import 'package:jobhub_jobseeker_ukk/app/modules/jobs/job_detail_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/jobs/job_list_page.dart';
+import 'package:jobhub_jobseeker_ukk/app/modules/notification/notification_paga.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/profile_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/search/search_page.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
@@ -76,75 +78,16 @@ class AppRouter {
           return const JobListPage();
         },
       ),
-      // GoRoute(
-      //   path: '/explore/:category',
-      //   name: 'explore',
-      //   builder: (context, state) {
-      //     final category = state.pathParameters['category']!;
-      //     return ExplorePage(category: category);
-      //   },
-      // ),
-      // GoRoute(
-      //   path: '/detail/:destinationId',
-      //   name: 'detail',
-      //   builder: (context, state) {
-      //     final destinationId = state.pathParameters['destinationId']!;
-      //     return DetailComponentPage(destinationId: destinationId);
-      //   },
-      //   routes: [
-      //     GoRoute(
-      //       path: 'virtual-tour',
-      //       name: 'virtual-tour',
-      //       builder: (context, state) {
-      //         final destinationId = state.pathParameters['destinationId']!;
-      //         return VirtualTourPage(destinationId: destinationId);
-      //       },
-      //     ),
-      //     GoRoute(
-      //       path: 'booking',
-      //       name: 'booking',
-      //       builder: (context, state) {
-      //         final destinationId = state.pathParameters['destinationId']!;
-      //         return BookingTiketPage(destinationId: destinationId);
-      //       },
-      //     ),
-      //   ],
-      // ),
-      // GoRoute(
-      //   path: '/trip-ai-planner',
-      //   name: 'trip-ai-planner',
-      //   builder: (context, state) => const TripAIPlannerPage(),
-      //   routes: [
-      //     GoRoute(
-      //       path: 'provinsi',
-      //       name: 'kategori-provinsi',
-      //       builder: (context, state) => const KategoriProvinsiPage(),
-      //     ),
-      //     GoRoute(
-      //       path: 'greater-city',
-      //       name: 'kategori-greater-city',
-      //       builder: (context, state) => const KategoriGreaterCityPage(),
-      //     ),
-      //     GoRoute(
-      //       path: 'city',
-      //       name: 'kategori-city',
-      //       builder: (context, state) => const KategoriCityPage(),
-      //     ),
-      //     GoRoute(
-      //       path: 'loading',
-      //       name: 'kategori-loading',
-      //       builder: (context, state) => const LoadingScreen(),
-      //     ),
-      //     GoRoute(
-      //       path: 'timeline',
-      //       name: 'timeline-trip',
-      //       builder: (context, state) {
-      //         final tripResponse = state.extra as TripResponse?;
-      //         return TimelineTripPage(tripResponse: tripResponse);
-      //       },
-      //     ),
-      //   ],
-      // ),
+      GoRoute(
+        path: '/jobs-detail',
+        name: 'jobs-detail',
+        builder: (context, state) => const JobDetailPage(),
+      ),
+      GoRoute(
+        path: '/notification',
+        name: 'notification',
+        builder: (context, state) => const NotificationPaga(),
+      ),
     ],
   );
 }

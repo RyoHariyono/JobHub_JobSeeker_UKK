@@ -19,16 +19,16 @@ class JobCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(showFullDetails ? 25 : 15),
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: Colors.white,
-          border: Border.all(color: Color(0xFFE5E7EB), width: 1),
-        ),
+    return Container(
+      padding: EdgeInsets.all(showFullDetails ? 25 : 15),
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        border: Border.all(color: Color(0xFFE5E7EB), width: 1),
+      ),
+      child: GestureDetector(
+        onTap: onTap,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

@@ -220,9 +220,7 @@ class _HomePageContentState extends State<HomePageContent> {
         ),
         // Notification icon
         IconButton(
-          onPressed: () {
-            // Add your notification action here
-          },
+          onPressed: () => context.go('/notification'),
           icon: Icon(LucideIcons.bell, size: 24, color: AppColors.darkGrey),
         ),
       ],
@@ -373,10 +371,7 @@ class _HomePageContentState extends State<HomePageContent> {
                       ), // Jarak kanan antar container
                       child: JobCard(
                         job: job,
-                        onTap: () {
-                          HapticFeedback.lightImpact();
-                          // Navigate to job detail
-                        },
+                        onTap: () => context.go('/jobs-detail'),
                         onBookmarkTap: () => _toggleBookmark(job),
                       ),
                     );
@@ -449,10 +444,7 @@ class _HomePageContentState extends State<HomePageContent> {
                   child: JobCard(
                     job: job,
                     showFullDetails: false,
-                    onTap: () {
-                      // Navigate to job detail
-                      HapticFeedback.lightImpact();
-                    },
+                    onTap: () => context.go('/jobs-detail'),
                     onBookmarkTap: () => _toggleBookmark(job),
                   ),
                 ),

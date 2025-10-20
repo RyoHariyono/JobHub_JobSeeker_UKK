@@ -162,11 +162,7 @@ class _JobListPageState extends State<JobListPage> {
                           padding: EdgeInsets.only(bottom: 15),
                           child: JobCard2(
                             job: job,
-                            onTap: () {
-                              // Navigate to job detail page
-                              HapticFeedback.lightImpact();
-                              // TODO: Implement navigation to job detail
-                            },
+                            onTap: () => context.go('/jobs-detail'),
                             onBookmarkTap: () => _toggleBookmark(job),
                           ),
                         );
