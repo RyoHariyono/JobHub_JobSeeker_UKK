@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:card_loading/card_loading.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
 import 'package:jobhub_jobseeker_ukk/data/models/job.dart';
 import 'package:jobhub_jobseeker_ukk/data/services/job_data_service.dart';
 import 'package:jobhub_jobseeker_ukk/shared/widgets/job_card.dart';
+import 'package:jobhub_jobseeker_ukk/shared/widgets/job_card_2.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class JobListPage extends StatefulWidget {
@@ -98,16 +100,21 @@ class _JobListPageState extends State<JobListPage> {
       ),
       body:
           isLoading
-              ? Center(
-                child: Column(
-                  children: [
-                    SizedBox(height: 10),
-                    CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        AppColors.primaryBlue,
+              ? Padding(
+                padding: EdgeInsets.symmetric(horizontal: 35),
+                child: ListView.builder(
+                  itemCount: 8,
+                  itemBuilder:
+                      (context, index) => Padding(
+                        padding: EdgeInsets.only(
+                          bottom: 15,
+                          top: index == 0 ? 20 : 0,
+                        ),
+                        child: CardLoading(
+                          height: 165,
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        ),
                       ),
-                    ),
-                  ],
                 ),
               )
               : jobs.isEmpty
@@ -152,7 +159,7 @@ class _JobListPageState extends State<JobListPage> {
                         final job = jobs[index];
                         return Padding(
                           padding: EdgeInsets.only(bottom: 15),
-                          child: JobCard(
+                          child: JobCard2(
                             job: job,
                             onTap: () {
                               // Navigate to job detail page
