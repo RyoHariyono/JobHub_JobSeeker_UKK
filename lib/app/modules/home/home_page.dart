@@ -134,13 +134,12 @@ class _HomePageContentState extends State<HomePageContent> {
 
               // Search Bar
               SizedBox(height: 35),
-              GestureDetector(
-                onTap: () {
-                  GoRouter.of(context).go('/search');
-                },
-                child: CustomSearchBar(readOnly: true),
+              CustomSearchBar(
+                hintText: "Search your dream job here",
+                readOnly: true,
+                onChanged: (value) => context.go('/search'),
+                onTap: () => context.go('/search'),
               ),
-
               // Category Menu
               SizedBox(height: 30),
               _buildCategoryMenu(),
