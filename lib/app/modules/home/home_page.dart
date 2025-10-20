@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:card_loading/card_loading.dart';
+import 'package:jobhub_jobseeker_ukk/app/modules/search/search_page.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
 import 'package:jobhub_jobseeker_ukk/data/models/job.dart';
 import 'package:jobhub_jobseeker_ukk/data/services/job_data_service.dart';
@@ -19,6 +21,7 @@ class HomePageContent extends StatefulWidget {
 }
 
 class _HomePageContentState extends State<HomePageContent> {
+  int _popularJobPage = 0;
   JobCategory? selectedCategory;
   List<Job> popularJobs = [];
   List<Job> recommendationJobs = [];
@@ -138,7 +141,15 @@ class _HomePageContentState extends State<HomePageContent> {
 
               // Search Bar
               SizedBox(height: 35),
-              CustomSearchBar(readOnly: true, onTap: _onSearchTap),
+              CustomSearchBar(
+                readOnly: true,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SearchPage()),
+                  );
+                },
+              ),
 
               // Category Menu
               SizedBox(height: 30),
@@ -316,15 +327,10 @@ class _HomePageContentState extends State<HomePageContent> {
         ),
         SizedBox(height: 15),
         if (isLoading)
-          Container(
+          CardLoading(
             height: 200,
-            child: Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  AppColors.primaryBlue,
-                ),
-              ),
-            ),
+            borderRadius: BorderRadius.all(Radius.circular(12)),
+            margin: EdgeInsets.only(bottom: 16),
           )
         else if (popularJobs.isEmpty)
           Container(
@@ -357,16 +363,57 @@ class _HomePageContentState extends State<HomePageContent> {
             ),
           )
         else
-          Container(
-            height: 200,
-            child: JobCard(
-              job: popularJobs.first,
-              onTap: () {
-                // Navigate to job detail
-                HapticFeedback.lightImpact();
-              },
-              onBookmarkTap: () => _toggleBookmark(popularJobs.first),
-            ),
+          Column(
+            children: [
+              Container(
+                height: 200,
+                child: PageView.builder(
+                  itemCount: popularJobs.length.clamp(0, 3),
+                  controller: PageController(viewportFraction: 0.99),
+                  pageSnapping: true,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _popularJobPage = index;
+                    });
+                  },
+                  itemBuilder: (context, index) {
+                    final job = popularJobs[index];
+                    return Padding(
+                      padding: EdgeInsets.only(
+                        right: 5,
+                      ), // Jarak kanan antar container
+                      child: JobCard(
+                        job: job,
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          // Navigate to job detail
+                        },
+                        onBookmarkTap: () => _toggleBookmark(job),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  popularJobs.length.clamp(0, 4),
+                  (index) => Container(
+                    width: 18,
+                    height: 7,
+                    margin: EdgeInsets.symmetric(horizontal: 4),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      color:
+                          _popularJobPage == index
+                              ? AppColors.primaryBlue
+                              : Color(0xFFE5E7EB),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
       ],
     );
@@ -386,15 +433,24 @@ class _HomePageContentState extends State<HomePageContent> {
         ),
         SizedBox(height: 15),
         if (isLoading)
-          Container(
-            height: 100,
-            child: Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  AppColors.primaryBlue,
-                ),
+          Column(
+            children: [
+              CardLoading(
+                height: 80,
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+                margin: EdgeInsets.only(bottom: 12),
               ),
-            ),
+              CardLoading(
+                height: 80,
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+                margin: EdgeInsets.only(bottom: 12),
+              ),
+              CardLoading(
+                height: 80,
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+                margin: EdgeInsets.only(bottom: 12),
+              ),
+            ],
           )
         else if (recommendationJobs.isNotEmpty)
           ...recommendationJobs
