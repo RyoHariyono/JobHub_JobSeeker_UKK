@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:card_loading/card_loading.dart';
-import 'package:jobhub_jobseeker_ukk/app/modules/search/search_page.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
 import 'package:jobhub_jobseeker_ukk/data/models/job.dart';
 import 'package:jobhub_jobseeker_ukk/data/services/job_data_service.dart';
 import 'package:jobhub_jobseeker_ukk/shared/widgets/job_card.dart';
 import 'package:jobhub_jobseeker_ukk/shared/widgets/menu_card.dart';
 import 'package:jobhub_jobseeker_ukk/shared/widgets/custom_search_bar.dart';
-import 'package:jobhub_jobseeker_ukk/app/modules/jobs/job_list_page.dart';
+
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class HomePageContent extends StatefulWidget {
@@ -80,25 +80,18 @@ class _HomePageContentState extends State<HomePageContent> {
     _loadJobs();
   }
 
-  void _onSearchTap() {
-    if (widget.onNavigateToSearch != null) {
-      widget.onNavigateToSearch!(1); // Navigate to search page (navbar index 1)
-    }
-  }
-
   void _onSeeMoreTap() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder:
-            (context) => JobListPage(
-              category: selectedCategory,
-              categoryTitle:
-                  selectedCategory != null
-                      ? JobDataService.getCategoryName(selectedCategory!)
-                      : 'All Jobs',
-            ),
-      ),
+    context.go(
+      '/jobs-popular-list',
+      extra:
+          selectedCategory != null
+              ? {
+                'category': selectedCategory,
+                'categoryTitle': JobDataService.getCategoryName(
+                  selectedCategory!,
+                ),
+              }
+              : 'All Jobs',
     );
   }
 
@@ -141,14 +134,11 @@ class _HomePageContentState extends State<HomePageContent> {
 
               // Search Bar
               SizedBox(height: 35),
-              CustomSearchBar(
-                readOnly: true,
+              GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SearchPage()),
-                  );
+                  GoRouter.of(context).go('/search');
                 },
+                child: CustomSearchBar(readOnly: true),
               ),
 
               // Category Menu

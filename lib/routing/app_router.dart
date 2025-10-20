@@ -1,0 +1,258 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:jobhub_jobseeker_ukk/app/modules/application/application_page.dart';
+import 'package:jobhub_jobseeker_ukk/app/modules/home/home_page.dart';
+import 'package:jobhub_jobseeker_ukk/app/modules/jobs/job_list_page.dart';
+import 'package:jobhub_jobseeker_ukk/app/modules/profile/profile_page.dart';
+import 'package:jobhub_jobseeker_ukk/app/modules/search/search_page.dart';
+import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
+import 'package:jobhub_jobseeker_ukk/data/models/job.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+
+class AppRouter {
+  static final GoRouter router = GoRouter(
+    initialLocation: '/',
+    routes: [
+      // Bottom Navigation Shell
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return ScaffoldWithNavBar(navigationShell: navigationShell);
+        },
+        branches: [
+          // Home Branch
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/',
+                name: 'home',
+                builder: (context, state) => const HomePageContent(),
+              ),
+            ],
+          ),
+          // Search Branch
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/search',
+                name: 'search',
+                builder: (context, state) => const SearchPage(),
+              ),
+            ],
+          ),
+          // Saved Plans Branch
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/applications',
+                name: 'applications',
+                builder: (context, state) => const ApplicationPage(),
+              ),
+            ],
+          ),
+          // Profile Branch
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/profile',
+                name: 'profile',
+                builder: (context, state) => const ProfilePage(),
+              ),
+            ],
+          ),
+        ],
+      ),
+      // Routes without navbar - outside StatefulShellRoute
+      GoRoute(
+        path: '/jobs-popular-list',
+        name: 'jobs-popular-list',
+        builder: (context, state) {
+          final extra = state.extra;
+          if (extra is Map) {
+            return JobListPage(
+              category: extra['category'] as JobCategory?,
+              categoryTitle: extra['categoryTitle'] as String?,
+            );
+          }
+          return const JobListPage();
+        },
+      ),
+      // GoRoute(
+      //   path: '/explore/:category',
+      //   name: 'explore',
+      //   builder: (context, state) {
+      //     final category = state.pathParameters['category']!;
+      //     return ExplorePage(category: category);
+      //   },
+      // ),
+      // GoRoute(
+      //   path: '/detail/:destinationId',
+      //   name: 'detail',
+      //   builder: (context, state) {
+      //     final destinationId = state.pathParameters['destinationId']!;
+      //     return DetailComponentPage(destinationId: destinationId);
+      //   },
+      //   routes: [
+      //     GoRoute(
+      //       path: 'virtual-tour',
+      //       name: 'virtual-tour',
+      //       builder: (context, state) {
+      //         final destinationId = state.pathParameters['destinationId']!;
+      //         return VirtualTourPage(destinationId: destinationId);
+      //       },
+      //     ),
+      //     GoRoute(
+      //       path: 'booking',
+      //       name: 'booking',
+      //       builder: (context, state) {
+      //         final destinationId = state.pathParameters['destinationId']!;
+      //         return BookingTiketPage(destinationId: destinationId);
+      //       },
+      //     ),
+      //   ],
+      // ),
+      // GoRoute(
+      //   path: '/trip-ai-planner',
+      //   name: 'trip-ai-planner',
+      //   builder: (context, state) => const TripAIPlannerPage(),
+      //   routes: [
+      //     GoRoute(
+      //       path: 'provinsi',
+      //       name: 'kategori-provinsi',
+      //       builder: (context, state) => const KategoriProvinsiPage(),
+      //     ),
+      //     GoRoute(
+      //       path: 'greater-city',
+      //       name: 'kategori-greater-city',
+      //       builder: (context, state) => const KategoriGreaterCityPage(),
+      //     ),
+      //     GoRoute(
+      //       path: 'city',
+      //       name: 'kategori-city',
+      //       builder: (context, state) => const KategoriCityPage(),
+      //     ),
+      //     GoRoute(
+      //       path: 'loading',
+      //       name: 'kategori-loading',
+      //       builder: (context, state) => const LoadingScreen(),
+      //     ),
+      //     GoRoute(
+      //       path: 'timeline',
+      //       name: 'timeline-trip',
+      //       builder: (context, state) {
+      //         final tripResponse = state.extra as TripResponse?;
+      //         return TimelineTripPage(tripResponse: tripResponse);
+      //       },
+      //     ),
+      //   ],
+      // ),
+    ],
+  );
+}
+
+// Bottom Navigation Bar Widget
+class ScaffoldWithNavBar extends StatelessWidget {
+  const ScaffoldWithNavBar({required this.navigationShell, super.key});
+
+  final StatefulNavigationShell navigationShell;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: navigationShell,
+      bottomNavigationBar: Container(
+        height: 100,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Color(0xFFE5E7EB), width: 1.0)),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+            ),
+            child: BottomNavigationBar(
+              elevation: 0,
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: Colors.white,
+              selectedItemColor: AppColors.primaryBlue,
+              unselectedItemColor: const Color(0xFF6B7280),
+              selectedLabelStyle: const TextStyle(
+                fontSize: 11,
+                height: 1.5,
+                fontWeight: FontWeight.w500,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                color: Color(0xFF6B7280),
+                fontSize: 11,
+                height: 1.5,
+                fontWeight: FontWeight.w500,
+              ),
+              onTap: (index) => navigationShell.goBranch(index),
+              currentIndex: navigationShell.currentIndex,
+              items: [
+                BottomNavigationBarItem(
+                  icon: Container(
+                    margin: const EdgeInsets.only(bottom: 6),
+                    child: Icon(
+                      LucideIcons.house,
+                      color:
+                          navigationShell.currentIndex == 0
+                              ? AppColors.primaryBlue
+                              : const Color(0xFF6B7280),
+                      size: 24,
+                    ),
+                  ),
+                  label: 'Home',
+                ),
+                BottomNavigationBarItem(
+                  icon: Container(
+                    margin: const EdgeInsets.only(bottom: 6),
+                    child: Icon(
+                      LucideIcons.search,
+                      color:
+                          navigationShell.currentIndex == 1
+                              ? AppColors.primaryBlue
+                              : const Color(0xFF6B7280),
+                      size: 24,
+                    ),
+                  ),
+                  label: 'Search',
+                ),
+                BottomNavigationBarItem(
+                  icon: Container(
+                    margin: const EdgeInsets.only(bottom: 6),
+                    child: Icon(
+                      LucideIcons.bookmark,
+                      color:
+                          navigationShell.currentIndex == 2
+                              ? AppColors.primaryBlue
+                              : const Color(0xFF6B7280),
+                      size: 24,
+                    ),
+                  ),
+                  label: 'Applications',
+                ),
+                BottomNavigationBarItem(
+                  icon: Container(
+                    margin: const EdgeInsets.only(bottom: 6),
+                    child: Icon(
+                      LucideIcons.user,
+                      color:
+                          navigationShell.currentIndex == 3
+                              ? AppColors.primaryBlue
+                              : const Color(0xFF6B7280),
+                      size: 24,
+                    ),
+                  ),
+                  label: 'Profile',
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

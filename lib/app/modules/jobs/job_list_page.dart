@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:card_loading/card_loading.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
 import 'package:jobhub_jobseeker_ukk/data/models/job.dart';
 import 'package:jobhub_jobseeker_ukk/data/services/job_data_service.dart';
@@ -71,7 +72,7 @@ class _JobListPageState extends State<JobListPage> {
             color: AppColors.darkGrey,
             size: 24,
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.go('/'),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
