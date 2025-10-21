@@ -29,8 +29,13 @@ class _JobDetailPageState extends State<JobDetailPage> {
   }
 
   void _toggleBookmark() {
+    JobDataService.toggleBookmark(jobData);
     setState(() {
-      jobData = JobDataService.toggleBookmark(jobData);
+      // Always reload jobData from JobDataService to sync all components
+      jobData = JobDataService.getAllJobs().firstWhere(
+        (j) => j.id == jobData.id,
+        orElse: () => jobData,
+      );
     });
     if (widget.onBookmarkToggle != null) {
       widget.onBookmarkToggle!(jobData);

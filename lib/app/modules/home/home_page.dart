@@ -52,6 +52,30 @@ class _HomePageContentState extends State<HomePageContent> {
   void initState() {
     super.initState();
     _loadJobs();
+    JobDataService.jobsNotifier.addListener(_onJobsChanged);
+  }
+
+  @override
+  void dispose() {
+    JobDataService.jobsNotifier.removeListener(_onJobsChanged);
+    super.dispose();
+  }
+
+  void _onJobsChanged() {
+    setState(() {
+      isLoading = true;
+    });
+    Future.delayed(Duration(milliseconds: 500), () {
+      setState(() {
+        if (selectedCategory != null) {
+          popularJobs = JobDataService.getJobsByCategory(selectedCategory!);
+        } else {
+          popularJobs = JobDataService.getPopularJobs(limit: 4);
+        }
+        recommendationJobs = JobDataService.getRandomJobs(5);
+        isLoading = false;
+      });
+    });
   }
 
   void _loadJobs() {
@@ -97,18 +121,15 @@ class _HomePageContentState extends State<HomePageContent> {
 
   void _toggleBookmark(Job job) {
     HapticFeedback.lightImpact();
+    JobDataService.toggleBookmark(job);
     setState(() {
-      final updatedJob = JobDataService.toggleBookmark(job);
-      final popularIndex = popularJobs.indexWhere((j) => j.id == job.id);
-      if (popularIndex != -1) {
-        popularJobs[popularIndex] = updatedJob;
+      // Always reload job lists from JobDataService to sync all components
+      if (selectedCategory != null) {
+        popularJobs = JobDataService.getJobsByCategory(selectedCategory!);
+      } else {
+        popularJobs = JobDataService.getPopularJobs(limit: 4);
       }
-      final recommendationIndex = recommendationJobs.indexWhere(
-        (j) => j.id == job.id,
-      );
-      if (recommendationIndex != -1) {
-        recommendationJobs[recommendationIndex] = updatedJob;
-      }
+      recommendationJobs = JobDataService.getRandomJobs(5);
     });
   }
 

@@ -49,11 +49,13 @@ class _JobListPageState extends State<JobListPage> {
 
   void _toggleBookmark(Job job) {
     HapticFeedback.lightImpact();
+    JobDataService.toggleBookmark(job);
     setState(() {
-      final updatedJob = JobDataService.toggleBookmark(job);
-      final index = jobs.indexWhere((j) => j.id == job.id);
-      if (index != -1) {
-        jobs[index] = updatedJob;
+      // Always reload job list from JobDataService to sync all components
+      if (widget.category != null) {
+        jobs = JobDataService.getJobsByCategory(widget.category!);
+      } else {
+        jobs = JobDataService.getAllJobs();
       }
     });
   }

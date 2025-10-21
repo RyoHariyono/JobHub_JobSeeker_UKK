@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import '../models/job.dart';
 import '../models/company.dart';
 
 class JobDataService {
+  static ValueNotifier<List<Job>> get jobsNotifier => _allJobsNotifier;
   static final List<Company> _companies = [
     Company(
       id: 'apple',
@@ -61,7 +63,8 @@ class JobDataService {
     ),
   ];
 
-  static final List<Job> _allJobs = [
+  static final ValueNotifier<List<Job>>
+  _allJobsNotifier = ValueNotifier<List<Job>>([
     // UI/UX Design Jobs
     Job(
       id: 'job_1',
@@ -383,27 +386,29 @@ class JobDataService {
       experience: '7+ years',
       jobLevel: 'Principal/Staff Level',
     ),
-  ];
+  ]);
 
   // Get all jobs
   static List<Job> getAllJobs() {
-    return List.from(_allJobs);
+    return List.from(_allJobsNotifier.value);
   }
 
   // Get jobs by category
   static List<Job> getJobsByCategory(JobCategory category) {
-    return _allJobs.where((job) => job.category == category).toList();
+    return _allJobsNotifier.value
+        .where((job) => job.category == category)
+        .toList();
   }
 
   // Get random jobs for recommendations
   static List<Job> getRandomJobs(int count) {
-    final shuffled = List<Job>.from(_allJobs)..shuffle();
+    final shuffled = List<Job>.from(_allJobsNotifier.value)..shuffle();
     return shuffled.take(count).toList();
   }
 
   // Get popular jobs (most recent)
   static List<Job> getPopularJobs({int limit = 5}) {
-    final sorted = List<Job>.from(_allJobs)
+    final sorted = List<Job>.from(_allJobsNotifier.value)
       ..sort((a, b) => b.postedDate.compareTo(a.postedDate));
     return sorted.take(limit).toList();
   }
@@ -434,7 +439,7 @@ class JobDataService {
     if (query.isEmpty) return getAllJobs();
 
     final lowercaseQuery = query.toLowerCase();
-    return _allJobs.where((job) {
+    return _allJobsNotifier.value.where((job) {
       return job.title.toLowerCase().contains(lowercaseQuery) ||
           job.company.name.toLowerCase().contains(lowercaseQuery) ||
           job.location.toLowerCase().contains(lowercaseQuery) ||
@@ -445,10 +450,12 @@ class JobDataService {
 
   // Toggle bookmark
   static Job toggleBookmark(Job job) {
-    final index = _allJobs.indexWhere((j) => j.id == job.id);
+    final jobs = _allJobsNotifier.value;
+    final index = jobs.indexWhere((j) => j.id == job.id);
     if (index != -1) {
-      _allJobs[index] = job.copyWith(isBookmarked: !job.isBookmarked);
-      return _allJobs[index];
+      jobs[index] = job.copyWith(isBookmarked: !job.isBookmarked);
+      _allJobsNotifier.value = List<Job>.from(jobs);
+      return jobs[index];
     }
     return job;
   }
