@@ -37,6 +37,64 @@ class _JobDetailPageState extends State<JobDetailPage> {
     }
   }
 
+  // Responsive methods
+  double _getHorizontalPadding(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 1200) return 120;
+    if (width > 768) return 80;
+    if (width > 600) return 50;
+    return 30;
+  }
+
+  double _getTitleFontSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 24;
+    if (width > 600) return 22;
+    return 20;
+  }
+
+  double _getSubtitleFontSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 16;
+    if (width > 600) return 15;
+    return 14;
+  }
+
+  double _getSectionTitleFontSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 18;
+    if (width > 600) return 17;
+    return 16;
+  }
+
+  double _getBodyFontSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 15;
+    if (width > 600) return 14.5;
+    return 14;
+  }
+
+  double _getTagFontSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 14;
+    if (width > 600) return 13.5;
+    return 13;
+  }
+
+  double _getLogoSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 120;
+    if (width > 600) return 110;
+    return 100;
+  }
+
+  double _getIconSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 50;
+    if (width > 600) return 45;
+    return 40;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,7 +132,10 @@ class _JobDetailPageState extends State<JobDetailPage> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(30, 20, 30, 20),
+        padding: EdgeInsets.symmetric(
+          horizontal: _getHorizontalPadding(context),
+          vertical: 20,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -85,15 +146,15 @@ class _JobDetailPageState extends State<JobDetailPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    width: 100,
-                    height: 100,
+                    width: _getLogoSize(context),
+                    height: _getLogoSize(context),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(24),
                       border: Border.all(color: Color(0xFFE5E7EB), width: 1),
                     ),
                     child: Icon(
                       LucideIcons.building,
-                      size: 40,
+                      size: _getIconSize(context),
                       color: AppColors.mediumGrey,
                     ),
                   ),
@@ -105,7 +166,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                       Text(
                         jobData.title,
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: _getTitleFontSize(context),
                           fontWeight: FontWeight.w700,
                           color: AppColors.darkGrey,
                         ),
@@ -115,7 +176,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                       Text(
                         "${jobData.company.name}, ${jobData.location}",
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: _getSubtitleFontSize(context),
                           fontWeight: FontWeight.w500,
                           color: AppColors.mediumGrey,
                         ),
@@ -135,11 +196,9 @@ class _JobDetailPageState extends State<JobDetailPage> {
                 spacing: 12,
                 runSpacing: 12,
                 children: [
-                  _buildTag(
-                    jobData.categoryName.split(' ')[0],
-                  ), // First word of category
-                  _buildTag(jobData.typeName),
-                  _buildTag(jobData.daysAgo),
+                  _buildTag(jobData.categoryName.split(' ')[0], context),
+                  _buildTag(jobData.typeName, context),
+                  _buildTag(jobData.daysAgo, context),
                 ],
               ),
             ),
@@ -152,7 +211,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                 Text(
                   "About the job",
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: _getSectionTitleFontSize(context),
                     fontWeight: FontWeight.w600,
                     color: AppColors.darkGrey,
                   ),
@@ -161,7 +220,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                 Text(
                   jobData.description,
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: _getBodyFontSize(context),
                     fontWeight: FontWeight.normal,
                     color: AppColors.darkGrey.withOpacity(0.7),
                   ),
@@ -180,7 +239,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
                 Text(
                   "Job Information",
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: _getSectionTitleFontSize(context),
                     fontWeight: FontWeight.w600,
                     color: AppColors.darkGrey,
                   ),
@@ -189,31 +248,37 @@ class _JobDetailPageState extends State<JobDetailPage> {
                   LucideIcons.users,
                   "Capacity",
                   jobData.capacityText,
+                  context,
                 ),
                 _rowInformation(
                   LucideIcons.calendarClock,
                   "Start Date",
                   _formatDate(jobData.startDate),
+                  context,
                 ),
                 _rowInformation(
                   LucideIcons.calendarX,
                   "End Date",
                   _formatDate(jobData.deadlineDate),
+                  context,
                 ),
                 _rowInformation(
                   LucideIcons.rocket,
                   "Experience",
                   jobData.experience,
+                  context,
                 ),
                 _rowInformation(
                   LucideIcons.circleDollarSign,
                   "Salary",
                   jobData.salaryRange + " /month",
+                  context,
                 ),
                 _rowInformation(
                   LucideIcons.briefcase,
                   "Job Level",
                   jobData.jobLevel,
+                  context,
                 ),
               ],
             ),
@@ -227,13 +292,14 @@ class _JobDetailPageState extends State<JobDetailPage> {
                 Text(
                   "Qualifications",
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: _getSectionTitleFontSize(context),
                     fontWeight: FontWeight.w600,
                     color: AppColors.darkGrey,
                   ),
                 ),
                 SizedBox(height: 10),
-                for (final req in jobData.requirements) _qualificationItem(req),
+                for (final req in jobData.requirements)
+                  _qualificationItem(req, context),
               ],
             ),
             SizedBox(height: 20),
@@ -371,7 +437,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
     );
   }
 
-  Widget _buildTag(String text) {
+  Widget _buildTag(String text, BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       decoration: BoxDecoration(
@@ -381,7 +447,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
       child: Text(
         text,
         style: TextStyle(
-          fontSize: 13,
+          fontSize: _getTagFontSize(context),
           fontWeight: FontWeight.w500,
           color: AppColors.darkGrey,
         ),
@@ -389,7 +455,12 @@ class _JobDetailPageState extends State<JobDetailPage> {
     );
   }
 
-  Widget _rowInformation(IconData icon, String title, String info) {
+  Widget _rowInformation(
+    IconData icon,
+    String title,
+    String info,
+    BuildContext context,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -401,7 +472,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
             Text(
               title,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: _getBodyFontSize(context),
                 fontWeight: FontWeight.w500,
                 color: AppColors.darkGrey,
               ),
@@ -412,7 +483,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
           child: Text(
             info,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: _getBodyFontSize(context),
               fontWeight: FontWeight.w500,
               color: AppColors.darkGrey,
             ),
@@ -424,18 +495,24 @@ class _JobDetailPageState extends State<JobDetailPage> {
     );
   }
 
-  Widget _qualificationItem(String text) {
+  Widget _qualificationItem(String text, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("• ", style: TextStyle(fontSize: 14, color: AppColors.darkGrey)),
+          Text(
+            "• ",
+            style: TextStyle(
+              fontSize: _getBodyFontSize(context),
+              color: AppColors.darkGrey,
+            ),
+          ),
           Expanded(
             child: Text(
               text,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: _getBodyFontSize(context),
                 color: AppColors.darkGrey.withOpacity(0.7),
               ),
             ),

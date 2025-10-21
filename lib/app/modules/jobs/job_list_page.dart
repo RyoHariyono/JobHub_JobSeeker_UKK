@@ -90,13 +90,6 @@ class _JobListPageState extends State<JobListPage> {
     return 70;
   }
 
-  double _getCardLoadingHeight(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    if (width > 768) return 180;
-    if (width > 600) return 170;
-    return 165;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,7 +144,7 @@ class _JobListPageState extends State<JobListPage> {
                           top: index == 0 ? 20 : 0,
                         ),
                         child: CardLoading(
-                          height: _getCardLoadingHeight(context),
+                          height: 130,
                           borderRadius: BorderRadius.all(Radius.circular(12)),
                         ),
                       ),
