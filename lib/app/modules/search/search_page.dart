@@ -161,256 +161,310 @@ class _SearchPageState extends State<SearchPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
       ),
       builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-            left: 0,
-            right: 0,
-            top: 0,
-          ),
-          child: StatefulBuilder(
-            builder: (context, setModalState) {
-              String _getSalaryDisplay() {
-                final min = minSalaryController.text;
-                final max = maxSalaryController.text;
-                if (min.isNotEmpty && max.isNotEmpty) {
-                  return '\$$min - \$$max';
-                }
-                return 'min - max salary';
-              }
+        return DraggableScrollableSheet(
+          initialChildSize: 0.9,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          expand: false,
+          builder: (context, scrollController) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                left: 0,
+                right: 0,
+                top: 0,
+              ),
+              child: StatefulBuilder(
+                builder: (context, setModalState) {
+                  String _getSalaryDisplay() {
+                    final min = minSalaryController.text;
+                    final max = maxSalaryController.text;
+                    if (min.isNotEmpty && max.isNotEmpty) {
+                      return '\$min - \$max';
+                    }
+                    return 'min - max salary';
+                  }
 
-              return SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(height: 15),
-                    // Handle bar
-                    Center(
-                      child: Container(
-                        width: 40,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryBlue,
-                          borderRadius: BorderRadius.circular(20),
+                  return SingleChildScrollView(
+                    controller: scrollController,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(height: 15),
+                        // Handle bar
+                        Center(
+                          child: Container(
+                            width: 40,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryBlue,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    SizedBox(height: 15),
-                    // Header
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 30),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              Icons.arrow_back_ios_new,
-                              color: AppColors.darkGrey,
-                              size: 24,
-                            ),
-                            onPressed: () => Navigator.pop(context),
+                        SizedBox(height: 15),
+                        // Header
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 30),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              IconButton(
+                                icon: Icon(
+                                  Icons.arrow_back_ios_new,
+                                  color: AppColors.darkGrey,
+                                  size: 24,
+                                ),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  'Filter',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.darkGrey,
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.delete_outline,
+                                  color: AppColors.darkGrey,
+                                  size: 24,
+                                ),
+                                onPressed: () {
+                                  setModalState(() {
+                                    tempPosition = null;
+                                    tempCity = null;
+                                    tempType = null;
+                                    minSalaryController.clear();
+                                    maxSalaryController.clear();
+                                  });
+                                },
+                              ),
+                            ],
                           ),
-                          Text(
-                            'Filter',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.darkGrey,
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(
-                              Icons.delete_outline,
-                              color: AppColors.darkGrey,
-                              size: 24,
-                            ),
-                            onPressed: () {
-                              setModalState(() {
-                                tempPosition = null;
-                                tempCity = null;
-                                tempType = null;
-                                minSalaryController.clear();
-                                maxSalaryController.clear();
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    // Content
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 30),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Job position
-                          _buildFilterRow(
-                            'Job position',
-                            tempPosition ?? 'Choose job',
-                            () {
-                              _showPositionPicker(context, setModalState, (
-                                value,
-                              ) {
-                                tempPosition = value;
-                              });
-                            },
-                          ),
-                          SizedBox(height: 20),
-                          // City & location
-                          _buildFilterRow(
-                            'City & location',
-                            tempCity ?? 'Choose location job',
-                            () {
-                              _showCityPicker(context, setModalState, (value) {
-                                tempCity = value;
-                              });
-                            },
-                          ),
-                          SizedBox(height: 25),
-                          Divider(thickness: 1, color: Color(0xFFE5E7EB)),
+                        ),
+                        SizedBox(height: 20),
+                        // Content & Button space between
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 30),
+                          child: Column(
+                            children: [
+                              // Content
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Job position
+                                  _buildFilterRow(
+                                    'Job position',
+                                    tempPosition ?? 'Choose job',
+                                    () {
+                                      _showPositionPicker(
+                                        context,
+                                        setModalState,
+                                        (value) {
+                                          tempPosition = value;
+                                        },
+                                      );
+                                    },
+                                  ),
+                                  SizedBox(height: 20),
+                                  // City & location
+                                  _buildFilterRow(
+                                    'City & location',
+                                    tempCity ?? 'Choose location job',
+                                    () {
+                                      _showCityPicker(context, setModalState, (
+                                        value,
+                                      ) {
+                                        tempCity = value;
+                                      });
+                                    },
+                                  ),
+                                  SizedBox(height: 25),
+                                  Divider(
+                                    thickness: 1,
+                                    color: Color(0xFFE5E7EB),
+                                  ),
 
-                          // Job type
-                          SizedBox(height: 30),
-                          Text(
-                            'Job type',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                              color: AppColors.darkGrey,
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          Row(
-                            children:
-                                ['Full Time', 'Half Time', 'Freelance'].map((
-                                  type,
-                                ) {
-                                  final selected = tempType == type;
-                                  return Padding(
-                                    padding: EdgeInsets.only(right: 12),
-                                    child: GestureDetector(
-                                      onTap:
-                                          () => setModalState(
-                                            () => tempType = type,
-                                          ),
-                                      child: Container(
-                                        padding: EdgeInsets.all(10),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              selected
-                                                  ? AppColors.primaryBlue
-                                                  : AppColors.lightGrey,
-                                          borderRadius: BorderRadius.circular(
-                                            12,
+                                  // Job type
+                                  SizedBox(height: 30),
+                                  Text(
+                                    'Job type',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                      color: AppColors.darkGrey,
+                                    ),
+                                  ),
+                                  SizedBox(height: 20),
+                                  LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      return Wrap(
+                                        spacing: 12,
+                                        runSpacing: 12,
+                                        children:
+                                            [
+                                              'Full Time',
+                                              'Half Time',
+                                              'Freelance',
+                                            ].map((type) {
+                                              final selected = tempType == type;
+                                              return GestureDetector(
+                                                onTap:
+                                                    () => setModalState(
+                                                      () => tempType = type,
+                                                    ),
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                    horizontal: 16,
+                                                    vertical: 10,
+                                                  ),
+                                                  constraints: BoxConstraints(
+                                                    minWidth:
+                                                        (constraints.maxWidth -
+                                                            24) /
+                                                        3,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color:
+                                                        selected
+                                                            ? AppColors
+                                                                .primaryBlue
+                                                            : AppColors
+                                                                .lightGrey,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12,
+                                                        ),
+                                                  ),
+                                                  child: Text(
+                                                    type,
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                      color:
+                                                          selected
+                                                              ? Colors.white
+                                                              : Color(
+                                                                0xFF6B7280,
+                                                              ),
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                ),
+                                              );
+                                            }).toList(),
+                                      );
+                                    },
+                                  ),
+                                  SizedBox(height: 25),
+                                  Divider(
+                                    thickness: 1,
+                                    color: Color(0xFFE5E7EB),
+                                  ),
+                                  SizedBox(height: 30),
+
+                                  // Job salary
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          'Job salary',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 16,
+                                            color: AppColors.darkGrey,
                                           ),
                                         ),
+                                      ),
+                                      SizedBox(width: 8),
+                                      Flexible(
                                         child: Text(
-                                          type,
+                                          _getSalaryDisplay(),
+                                          textAlign: TextAlign.end,
+                                          overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
-                                            color:
-                                                selected
-                                                    ? Colors.white
-                                                    : Color(0xFF6B7280),
-                                            fontWeight: FontWeight.w600,
+                                            color: AppColors.mediumGrey,
+                                            fontWeight: FontWeight.normal,
                                             fontSize: 14,
                                           ),
                                         ),
                                       ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 20),
+
+                                  // Salary inputs
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: _buildSalaryInput(
+                                          'Min salary',
+                                          minSalaryController,
+                                          setModalState,
+                                        ),
+                                      ),
+                                      SizedBox(width: 20),
+                                      Expanded(
+                                        child: _buildSalaryInput(
+                                          'Max salary',
+                                          maxSalaryController,
+                                          setModalState,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 50),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primaryBlue,
+                                    padding: EdgeInsets.symmetric(vertical: 17),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                  );
-                                }).toList(),
-                          ),
-                          SizedBox(height: 25),
-                          Divider(thickness: 1, color: Color(0xFFE5E7EB)),
-                          SizedBox(height: 30),
-
-                          // Job salary
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Job salary',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
-                                  color: AppColors.darkGrey,
+                                    elevation: 0,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedPosition = tempPosition;
+                                      selectedCity = tempCity;
+                                      selectedType = tempType;
+                                    });
+                                    Navigator.pop(context);
+                                    _applyFilters(addToHistory: true);
+                                  },
+                                  child: Text(
+                                    'Search',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                                 ),
                               ),
-                              Text(
-                                _getSalaryDisplay(),
-                                style: TextStyle(
-                                  color: AppColors.mediumGrey,
-                                  fontWeight: FontWeight.normal,
-                                  fontSize: 14,
-                                ),
-                              ),
+                              SizedBox(height: 32),
                             ],
                           ),
-                          SizedBox(height: 20),
-
-                          // Salary inputs
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildSalaryInput(
-                                  'Min salary',
-                                  minSalaryController,
-                                  setModalState,
-                                ),
-                              ),
-                              SizedBox(width: 20),
-                              Expanded(
-                                child: _buildSalaryInput(
-                                  'Max salary',
-                                  maxSalaryController,
-                                  setModalState,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 100),
-
-                          // Search button
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primaryBlue,
-                                padding: EdgeInsets.symmetric(vertical: 17),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                elevation: 0,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  selectedPosition = tempPosition;
-                                  selectedCity = tempCity;
-                                  selectedType = tempType;
-                                });
-                                Navigator.pop(context);
-                                _applyFilters(addToHistory: true);
-                              },
-                              child: Text(
-                                'Search',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 32),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              );
-            },
-          ),
+                  );
+                },
+              ),
+            );
+          },
         );
       },
     );
@@ -422,27 +476,40 @@ class _SearchPageState extends State<SearchPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-              color: AppColors.darkGrey,
+          Flexible(
+            flex: 2,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+                color: AppColors.darkGrey,
+              ),
             ),
           ),
-          Row(
-            children: [
-              Text(
-                value,
-                style: TextStyle(color: AppColors.mediumGrey, fontSize: 14),
-              ),
-              SizedBox(width: 3),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 14,
-                color: AppColors.mediumGrey,
-              ),
-            ],
+          SizedBox(width: 8),
+          Flexible(
+            flex: 3,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(
+                  child: Text(
+                    value,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
+                    style: TextStyle(color: AppColors.mediumGrey, fontSize: 14),
+                  ),
+                ),
+                SizedBox(width: 3),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 14,
+                  color: AppColors.mediumGrey,
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -524,15 +591,22 @@ class _SearchPageState extends State<SearchPage> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             Divider(height: 24, thickness: 1, color: Color(0xFFE5E7EB)),
-            ...positions.map((position) {
-              return ListTile(
-                title: Text(position),
-                onTap: () {
-                  setModalState(() => onSelect(position));
-                  Navigator.pop(context);
-                },
-              );
-            }).toList(),
+            Flexible(
+              child: SingleChildScrollView(
+                child: Column(
+                  children:
+                      positions.map((position) {
+                        return ListTile(
+                          title: Text(position, style: TextStyle(fontSize: 15)),
+                          onTap: () {
+                            setModalState(() => onSelect(position));
+                            Navigator.pop(context);
+                          },
+                        );
+                      }).toList(),
+                ),
+              ),
+            ),
             SizedBox(height: 16),
           ],
         );
@@ -580,15 +654,22 @@ class _SearchPageState extends State<SearchPage> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             Divider(height: 24, thickness: 1, color: Color(0xFFE5E7EB)),
-            ...cities.map((city) {
-              return ListTile(
-                title: Text(city),
-                onTap: () {
-                  setModalState(() => onSelect(city));
-                  Navigator.pop(context);
-                },
-              );
-            }).toList(),
+            Flexible(
+              child: SingleChildScrollView(
+                child: Column(
+                  children:
+                      cities.map((city) {
+                        return ListTile(
+                          title: Text(city, style: TextStyle(fontSize: 15)),
+                          onTap: () {
+                            setModalState(() => onSelect(city));
+                            Navigator.pop(context);
+                          },
+                        );
+                      }).toList(),
+                ),
+              ),
+            ),
             SizedBox(height: 16),
           ],
         );
@@ -639,60 +720,66 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
           SizedBox(height: 10),
-          // History search bubble
+          // History search bubble - RESPONSIVE
           if (searchHistory.isNotEmpty)
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 30),
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.start,
-                  spacing: 10,
-                  runSpacing: 8,
-                  children:
-                      searchHistory
-                          .map(
-                            (keyword) => GestureDetector(
-                              onTap: () {
-                                searchController.text = keyword;
-                                _applyFilters();
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Color(0xFFF3F4F6),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.start,
+                    spacing: 10,
+                    runSpacing: 8,
+                    children:
+                        searchHistory.map((keyword) {
+                          return GestureDetector(
+                            onTap: () {
+                              searchController.text = keyword;
+                              _applyFilters();
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Color(0xFFF3F4F6),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ConstrainedBox(
+                                    constraints: BoxConstraints(maxWidth: 150),
+                                    child: Text(
                                       keyword,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: Color(0xFF6B7280),
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
-                                    SizedBox(width: 10),
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          searchHistory.remove(keyword);
-                                        });
-                                      },
-                                      child: Icon(
-                                        LucideIcons.circleX,
-                                        size: 17,
-                                        color: Color(0xFF6B7280),
-                                      ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        searchHistory.remove(keyword);
+                                      });
+                                    },
+                                    child: Icon(
+                                      LucideIcons.circleX,
+                                      size: 17,
+                                      color: Color(0xFF6B7280),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
-                          )
-                          .toList(),
+                          );
+                        }).toList(),
+                  ),
                 ),
               ),
             ),
@@ -704,31 +791,38 @@ class _SearchPageState extends State<SearchPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    spacing: 2,
-                    children: [
-                      Text(
-                        (searchController.text.isNotEmpty
-                                ? "${searchController.text}"
-                                : '') +
-                            (_activeFilterText().isNotEmpty
-                                ? ' ${_activeFilterText()}'
-                                : ''),
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.primaryBlue,
+                  Flexible(
+                    flex: 3,
+                    child: Row(
+                      spacing: 2,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            (searchController.text.isNotEmpty
+                                    ? "${searchController.text}"
+                                    : '') +
+                                (_activeFilterText().isNotEmpty
+                                    ? ' ${_activeFilterText()}'
+                                    : ''),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.primaryBlue,
+                            ),
+                          ),
                         ),
-                      ),
-                      Text(
-                        "Result",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.mediumGrey,
+                        Text(
+                          " Result",
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.mediumGrey,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   Text(
                     '${filteredJobs.length} Found',
