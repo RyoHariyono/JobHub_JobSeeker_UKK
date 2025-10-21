@@ -172,12 +172,7 @@ class _HomePageContentState extends State<HomePageContent> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            horizontalPadding,
-            verticalPaddingTop,
-            horizontalPadding,
-            verticalPaddingBottom,
-          ),
+          padding: EdgeInsets.fromLTRB(30, 50, 30, 35),
           child: Column(
             children: [
               _buildAppBar(),

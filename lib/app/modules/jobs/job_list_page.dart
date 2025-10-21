@@ -141,9 +141,7 @@ class _JobListPageState extends State<JobListPage> {
       body:
           isLoading
               ? Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: _getHorizontalPadding(context),
-                ),
+                padding: EdgeInsets.fromLTRB(30, 0, 30, 35),
                 child: ListView.builder(
                   itemCount: 8,
                   itemBuilder:
@@ -195,9 +193,7 @@ class _JobListPageState extends State<JobListPage> {
                   SizedBox(height: 10),
                   Expanded(
                     child: ListView.builder(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: _getHorizontalPadding(context),
-                      ),
+                      padding: EdgeInsets.fromLTRB(30, 0, 30, 35),
                       itemCount: jobs.length,
                       itemBuilder: (context, index) {
                         final job = jobs[index];
