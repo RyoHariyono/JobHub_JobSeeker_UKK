@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/application/application_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/home/home_page.dart';
+import 'package:jobhub_jobseeker_ukk/app/modules/jobs/Confirmation_send_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/jobs/job_detail_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/jobs/job_list_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/notification/notification_paga.dart';
@@ -9,6 +10,7 @@ import 'package:jobhub_jobseeker_ukk/app/modules/profile/profile_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/search/search_page.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
 import 'package:jobhub_jobseeker_ukk/data/models/job.dart';
+import 'package:jobhub_jobseeker_ukk/data/models/company.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class AppRouter {
@@ -81,7 +83,42 @@ class AppRouter {
       GoRoute(
         path: '/jobs-detail',
         name: 'jobs-detail',
-        builder: (context, state) => const JobDetailPage(),
+        builder: (context, state) {
+          final job = state.extra as Job?;
+          if (job != null) {
+            return JobDetailPage(job: job);
+          }
+          // fallback dummy job if needed
+          return JobDetailPage(
+            job: Job(
+              id: 'dummy',
+              title: 'Unknown',
+              company: Company(
+                id: 'dummy_company',
+                name: 'Unknown',
+                logoUrl: 'assets/images/apple_icon.png',
+                location: 'Unknown',
+                description: 'No company description.',
+              ),
+              category: JobCategory.softwareDevelopment,
+              type: JobType.fullTime,
+              location: 'Unknown',
+              minSalary: 0,
+              maxSalary: 0,
+              description: 'No description available.',
+              requirements: [],
+              postedDate: DateTime.now(),
+              deadlineDate: DateTime.now(),
+            ),
+          );
+        },
+        routes: [
+          GoRoute(
+            path: '/confirmation-send',
+            name: 'confirmation-send',
+            builder: (context, state) => const ConfirmationSendPage(),
+          ),
+        ],
       ),
       GoRoute(
         path: '/notification',

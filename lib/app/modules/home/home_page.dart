@@ -407,10 +407,11 @@ class _HomePageContentState extends State<HomePageContent> {
                     return Padding(
                       padding: EdgeInsets.only(
                         right: 5,
+                        left: 5,
                       ), // Jarak kanan antar container
                       child: JobCard(
                         job: job,
-                        onTap: () => context.go('/jobs-detail'),
+                        onTap: () => context.go('/jobs-detail', extra: job),
                         onBookmarkTap: () => _toggleBookmark(job),
                       ),
                     );
@@ -483,7 +484,7 @@ class _HomePageContentState extends State<HomePageContent> {
                   child: JobCard(
                     job: job,
                     showFullDetails: false,
-                    onTap: () => context.go('/jobs-detail'),
+                    onTap: () => context.go('/jobs-detail', extra: job),
                     onBookmarkTap: () => _toggleBookmark(job),
                   ),
                 ),

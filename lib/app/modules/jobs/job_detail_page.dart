@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:jobhub_jobseeker_ukk/data/models/job.dart';
 
 class JobDetailPage extends StatelessWidget {
-  const JobDetailPage({super.key});
+  final Job job;
+  const JobDetailPage({super.key, required this.job});
 
   @override
   Widget build(BuildContext context) {
+    // If job is not passed, fallback to dummy job (should not happen)
+    final Job jobData = job;
     double _getHorizontalPadding(BuildContext context) {
       final width = MediaQuery.of(context).size.width;
       if (width > 1200) return 120;
@@ -90,20 +94,25 @@ class JobDetailPage extends StatelessWidget {
                     height: 100,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Color(0xFFE5E7EB), width: 0.1),
+                      border: Border.all(color: Color(0xFFE5E7EB), width: 1),
                     ),
-                    child: Image.asset(
-                      'assets/images/apple_icon.png',
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
+                    child: Icon(
+                      LucideIcons.building,
+                      size: 40,
+                      color: AppColors.mediumGrey,
                     ),
+                    // Image.asset(
+                    //   jobData.company.logoUrl,
+                    //   width: 80,
+                    //   height: 80,
+                    //   fit: BoxFit.cover,
+                    // ),
                   ),
                   SizedBox(height: 20),
                   Column(
                     children: [
                       Text(
-                        "Senior UI/UX Designer",
+                        jobData.title,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
@@ -112,7 +121,7 @@ class JobDetailPage extends StatelessWidget {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        "Apple, Jakarta, Indonesia",
+                        "${jobData.company.name}, ${jobData.location}",
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -137,7 +146,7 @@ class JobDetailPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(9),
                   ),
                   child: Text(
-                    "Design",
+                    jobData.categoryName,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
@@ -152,7 +161,7 @@ class JobDetailPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(9),
                   ),
                   child: Text(
-                    "Full Time",
+                    jobData.typeName,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
@@ -167,7 +176,7 @@ class JobDetailPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(9),
                   ),
                   child: Text(
-                    "20 Days",
+                    jobData.daysAgo,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
@@ -191,7 +200,7 @@ class JobDetailPage extends StatelessWidget {
                 ),
                 SizedBox(height: 10),
                 Text(
-                  "We are looking for a highly skilled Senior UI/UX Designer to join Apple in Jakarta, Indonesia. The role involves creating intuitive, user-friendly, and visually appealing designs that enhance user experiences across digital platforms. You will work closely with cross-functional teams to ensure design consistency and innovation.",
+                  jobData.description,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.normal,
@@ -217,29 +226,30 @@ class JobDetailPage extends StatelessWidget {
                 ),
                 rowInformation(
                   LucideIcons.briefcase,
-                  "Capacity",
-                  "2 positions available",
+                  "Company",
+                  jobData.company.name,
                 ),
                 rowInformation(
                   LucideIcons.calendarClock,
-                  "Start Date",
-                  "Aug 28, 2025",
+                  "Posted Date",
+                  "${jobData.postedDate.toLocal().toString().split(' ')[0]}",
                 ),
                 rowInformation(
                   LucideIcons.calendarCheck,
-                  "End Date",
-                  "Sep 17, 2025",
+                  "Deadline",
+                  "${jobData.deadlineDate.toLocal().toString().split(' ')[0]}",
                 ),
                 rowInformation(LucideIcons.rocket, "Experience", "7+ years"),
+                // You can add more job fields here if needed
                 rowInformation(
                   LucideIcons.circleDollarSign,
                   "Salary",
-                  "\$1,000 – \$3,000 /month",
+                  jobData.salaryRange + " /month",
                 ),
                 rowInformation(
                   LucideIcons.graduationCap,
-                  "Job Level",
-                  "Senior Designer",
+                  "Tags",
+                  jobData.tags.isNotEmpty ? jobData.tags.join(', ') : '-',
                 ),
               ],
             ),
@@ -257,21 +267,7 @@ class JobDetailPage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 10),
-                qualificationItem(
-                  "Bachelor’s degree in Design, Computer Science, or related field.",
-                ),
-                qualificationItem(
-                  "Proven experience as a UI/UX Designer with a strong portfolio.",
-                ),
-                qualificationItem(
-                  "Proficiency in design tools such as Figma, Sketch, Adobe XD, and Photoshop.",
-                ),
-                qualificationItem(
-                  "Strong understanding of user-centered design principles and usability testing.",
-                ),
-                qualificationItem(
-                  "Excellent communication and collaboration skills to work effectively with cross-functional teams.",
-                ),
+                for (final req in jobData.requirements) qualificationItem(req),
               ],
             ),
             SizedBox(height: 20),
@@ -348,10 +344,10 @@ class JobDetailPage extends StatelessWidget {
                                     ),
                                     elevation: 0,
                                   ),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                    // Tambahkan aksi apply di sini
-                                  },
+                                  onPressed:
+                                      () => context.go(
+                                        '/jobs-detail/confirmation-send',
+                                      ),
                                   child: Text(
                                     "I’m sure",
                                     style: TextStyle(
@@ -399,7 +395,7 @@ class JobDetailPage extends StatelessWidget {
           child: Text(
             "Apply Now",
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
