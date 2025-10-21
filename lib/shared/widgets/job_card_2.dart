@@ -113,9 +113,9 @@ class JobCard2 extends StatelessWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Color(0xFF5F7394).withOpacity(0.14),
-            offset: Offset(0, 6),
-            blurRadius: 20,
+            color: Color(0xFF5F7394).withOpacity(0.10),
+            offset: Offset(2, 2),
+            blurRadius: 10,
             spreadRadius: 0,
           ),
         ],

@@ -6,6 +6,7 @@ class CustomSearchBar extends StatelessWidget {
   final VoidCallback? onTap;
   final TextEditingController? controller;
   final Function(String)? onChanged;
+  final Function(String)? onSubmitted;
   final bool readOnly;
 
   const CustomSearchBar({
@@ -14,6 +15,7 @@ class CustomSearchBar extends StatelessWidget {
     this.onTap,
     this.controller,
     this.onChanged,
+    this.onSubmitted,
     this.readOnly = false,
   });
 
@@ -53,6 +55,7 @@ class CustomSearchBar extends StatelessWidget {
             child: TextField(
               controller: controller,
               onChanged: onChanged,
+              onSubmitted: onSubmitted,
               onTap: readOnly ? onTap : null,
               readOnly: readOnly,
               decoration: InputDecoration(
