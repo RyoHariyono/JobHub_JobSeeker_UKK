@@ -196,17 +196,13 @@ class JobCard2 extends StatelessWidget {
                   ),
                 ),
                 // Bookmark icon
-                AbsorbPointer(
-                  child: GestureDetector(
-                    onTap: onBookmarkTap,
-                    child: Icon(
-                      job.isBookmarked ? Icons.bookmark : LucideIcons.bookmark,
-                      size: bookmarkSize,
-                      color:
-                          job.isBookmarked
-                              ? AppColors.red
-                              : AppColors.mediumGrey,
-                    ),
+                GestureDetector(
+                  onTap: onBookmarkTap,
+                  child: Icon(
+                    job.isBookmarked ? Icons.bookmark : LucideIcons.bookmark,
+                    size: bookmarkSize,
+                    color:
+                        job.isBookmarked ? AppColors.red : AppColors.mediumGrey,
                   ),
                 ),
               ],

@@ -85,8 +85,11 @@ class AppRouter {
         name: 'jobs-detail',
         builder: (context, state) {
           final job = state.extra as Job?;
+          void _toggleBookmark(Job job) {
+            // You can implement a global bookmark handler here if needed
+          }
           if (job != null) {
-            return JobDetailPage(job: job);
+            return JobDetailPage(job: job, onBookmarkToggle: _toggleBookmark);
           }
           // fallback dummy job if needed
           return JobDetailPage(
@@ -110,6 +113,7 @@ class AppRouter {
               postedDate: DateTime.now(),
               deadlineDate: DateTime.now(),
             ),
+            onBookmarkToggle: _toggleBookmark,
           );
         },
         routes: [

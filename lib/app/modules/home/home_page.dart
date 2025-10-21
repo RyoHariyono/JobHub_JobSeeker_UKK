@@ -99,14 +99,10 @@ class _HomePageContentState extends State<HomePageContent> {
     HapticFeedback.lightImpact();
     setState(() {
       final updatedJob = JobDataService.toggleBookmark(job);
-
-      // Update in popular jobs
       final popularIndex = popularJobs.indexWhere((j) => j.id == job.id);
       if (popularIndex != -1) {
         popularJobs[popularIndex] = updatedJob;
       }
-
-      // Update in recommendation jobs
       final recommendationIndex = recommendationJobs.indexWhere(
         (j) => j.id == job.id,
       );

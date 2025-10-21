@@ -27,6 +27,12 @@ class Job {
   final bool isBookmarked;
   final List<String> tags;
 
+  // New fields
+  final int capacity;
+  final DateTime startDate;
+  final String experience;
+  final String jobLevel;
+
   const Job({
     required this.id,
     required this.title,
@@ -43,7 +49,11 @@ class Job {
     required this.deadlineDate,
     this.isBookmarked = false,
     this.tags = const [],
-  });
+    this.capacity = 1,
+    DateTime? startDate,
+    this.experience = '1-3 years',
+    this.jobLevel = 'Mid Level',
+  }) : startDate = startDate ?? deadlineDate;
 
   String get categoryName {
     switch (category) {
@@ -84,6 +94,12 @@ class Job {
     return '${difference.inDays} Days';
   }
 
+  String get capacityText {
+    return capacity == 1
+        ? '1 position available'
+        : '$capacity positions available';
+  }
+
   Job copyWith({
     String? id,
     String? title,
@@ -100,6 +116,10 @@ class Job {
     DateTime? deadlineDate,
     bool? isBookmarked,
     List<String>? tags,
+    int? capacity,
+    DateTime? startDate,
+    String? experience,
+    String? jobLevel,
   }) {
     return Job(
       id: id ?? this.id,
@@ -117,6 +137,10 @@ class Job {
       deadlineDate: deadlineDate ?? this.deadlineDate,
       isBookmarked: isBookmarked ?? this.isBookmarked,
       tags: tags ?? this.tags,
+      capacity: capacity ?? this.capacity,
+      startDate: startDate ?? this.startDate,
+      experience: experience ?? this.experience,
+      jobLevel: jobLevel ?? this.jobLevel,
     );
   }
 
@@ -137,6 +161,13 @@ class Job {
       deadlineDate: DateTime.parse(json['deadlineDate'] as String),
       isBookmarked: json['isBookmarked'] as bool? ?? false,
       tags: List<String>.from(json['tags'] as List? ?? []),
+      capacity: json['capacity'] as int? ?? 1,
+      startDate:
+          json['startDate'] != null
+              ? DateTime.parse(json['startDate'] as String)
+              : null,
+      experience: json['experience'] as String? ?? '1-3 years',
+      jobLevel: json['jobLevel'] as String? ?? 'Mid Level',
     );
   }
 
@@ -157,6 +188,10 @@ class Job {
       'deadlineDate': deadlineDate.toIso8601String(),
       'isBookmarked': isBookmarked,
       'tags': tags,
+      'capacity': capacity,
+      'startDate': startDate.toIso8601String(),
+      'experience': experience,
+      'jobLevel': jobLevel,
     };
   }
 }

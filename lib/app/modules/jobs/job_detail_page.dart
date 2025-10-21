@@ -3,54 +3,42 @@ import 'package:go_router/go_router.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:jobhub_jobseeker_ukk/data/models/job.dart';
+import 'package:jobhub_jobseeker_ukk/data/services/job_data_service.dart';
+import 'package:intl/intl.dart';
 
-class JobDetailPage extends StatelessWidget {
+class JobDetailPage extends StatefulWidget {
   final Job job;
-  const JobDetailPage({super.key, required this.job});
+  final void Function(Job)? onBookmarkToggle;
+  const JobDetailPage({super.key, required this.job, this.onBookmarkToggle});
+
+  @override
+  State<JobDetailPage> createState() => _JobDetailPageState();
+}
+
+class _JobDetailPageState extends State<JobDetailPage> {
+  late Job jobData;
+
+  @override
+  void initState() {
+    super.initState();
+    jobData = widget.job;
+  }
+
+  String _formatDate(DateTime date) {
+    return DateFormat('MMM dd, yyyy').format(date);
+  }
+
+  void _toggleBookmark() {
+    setState(() {
+      jobData = JobDataService.toggleBookmark(jobData);
+    });
+    if (widget.onBookmarkToggle != null) {
+      widget.onBookmarkToggle!(jobData);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // If job is not passed, fallback to dummy job (should not happen)
-    final Job jobData = job;
-    double _getHorizontalPadding(BuildContext context) {
-      final width = MediaQuery.of(context).size.width;
-      if (width > 1200) return 120;
-      if (width > 768) return 50;
-      if (width > 600) return 35;
-      if (width > 400) return 18;
-      return 10;
-    }
-
-    double _getAppBarTitleFontSize(BuildContext context) {
-      final width = MediaQuery.of(context).size.width;
-      if (width > 768) return 18;
-      if (width > 600) return 17;
-      if (width > 400) return 16;
-      return 14;
-    }
-
-    double _getAppBarSubtitleFontSize(BuildContext context) {
-      final width = MediaQuery.of(context).size.width;
-      if (width > 768) return 16;
-      if (width > 600) return 15;
-      if (width > 400) return 14;
-      return 12;
-    }
-
-    double _getAppBarHeight(BuildContext context) {
-      final width = MediaQuery.of(context).size.width;
-      if (width > 768) return 80;
-      if (width > 600) return 75;
-      return 70;
-    }
-
-    double _getCardLoadingHeight(BuildContext context) {
-      final width = MediaQuery.of(context).size.width;
-      if (width > 768) return 180;
-      if (width > 600) return 170;
-      return 165;
-    }
-
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -74,9 +62,15 @@ class JobDetailPage extends StatelessWidget {
           ),
         ),
         actions: [
-          Icon(LucideIcons.bookmark, color: AppColors.darkGrey, size: 24),
+          IconButton(
+            icon: Icon(
+              jobData.isBookmarked ? Icons.bookmark : LucideIcons.bookmark,
+              color: jobData.isBookmarked ? Colors.red : AppColors.mediumGrey,
+              size: 24,
+            ),
+            onPressed: _toggleBookmark,
+          ),
         ],
-        actionsPadding: EdgeInsets.fromLTRB(0, 0, 25, 0),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -85,6 +79,7 @@ class JobDetailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            // Company Logo and Job Title Section
             Center(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -101,15 +96,11 @@ class JobDetailPage extends StatelessWidget {
                       size: 40,
                       color: AppColors.mediumGrey,
                     ),
-                    // Image.asset(
-                    //   jobData.company.logoUrl,
-                    //   width: 80,
-                    //   height: 80,
-                    //   fit: BoxFit.cover,
-                    // ),
                   ),
                   SizedBox(height: 20),
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         jobData.title,
@@ -118,6 +109,7 @@ class JobDetailPage extends StatelessWidget {
                           fontWeight: FontWeight.w700,
                           color: AppColors.darkGrey,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 8),
                       Text(
@@ -127,6 +119,7 @@ class JobDetailPage extends StatelessWidget {
                           fontWeight: FontWeight.w500,
                           color: AppColors.mediumGrey,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
@@ -134,59 +127,25 @@ class JobDetailPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              spacing: 20,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Color(0xFFF3F4F6),
-                    borderRadius: BorderRadius.circular(9),
-                  ),
-                  child: Text(
-                    jobData.categoryName,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.darkGrey,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Color(0xFFF3F4F6),
-                    borderRadius: BorderRadius.circular(9),
-                  ),
-                  child: Text(
-                    jobData.typeName,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.darkGrey,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Color(0xFFF3F4F6),
-                    borderRadius: BorderRadius.circular(9),
-                  ),
-                  child: Text(
-                    jobData.daysAgo,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.darkGrey,
-                    ),
-                  ),
-                ),
-              ],
+
+            // Tags Section
+            Center(
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 12,
+                runSpacing: 12,
+                children: [
+                  _buildTag(
+                    jobData.categoryName.split(' ')[0],
+                  ), // First word of category
+                  _buildTag(jobData.typeName),
+                  _buildTag(jobData.daysAgo),
+                ],
+              ),
             ),
             SizedBox(height: 35),
+
+            // About the job Section
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -211,6 +170,8 @@ class JobDetailPage extends StatelessWidget {
               ],
             ),
             SizedBox(height: 25),
+
+            // Job Information Section
             Column(
               spacing: 10,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -224,36 +185,41 @@ class JobDetailPage extends StatelessWidget {
                     color: AppColors.darkGrey,
                   ),
                 ),
-                rowInformation(
-                  LucideIcons.briefcase,
-                  "Company",
-                  jobData.company.name,
+                _rowInformation(
+                  LucideIcons.users,
+                  "Capacity",
+                  jobData.capacityText,
                 ),
-                rowInformation(
+                _rowInformation(
                   LucideIcons.calendarClock,
-                  "Posted Date",
-                  "${jobData.postedDate.toLocal().toString().split(' ')[0]}",
+                  "Start Date",
+                  _formatDate(jobData.startDate),
                 ),
-                rowInformation(
-                  LucideIcons.calendarCheck,
-                  "Deadline",
-                  "${jobData.deadlineDate.toLocal().toString().split(' ')[0]}",
+                _rowInformation(
+                  LucideIcons.calendarX,
+                  "End Date",
+                  _formatDate(jobData.deadlineDate),
                 ),
-                rowInformation(LucideIcons.rocket, "Experience", "7+ years"),
-                // You can add more job fields here if needed
-                rowInformation(
+                _rowInformation(
+                  LucideIcons.rocket,
+                  "Experience",
+                  jobData.experience,
+                ),
+                _rowInformation(
                   LucideIcons.circleDollarSign,
                   "Salary",
                   jobData.salaryRange + " /month",
                 ),
-                rowInformation(
-                  LucideIcons.graduationCap,
-                  "Tags",
-                  jobData.tags.isNotEmpty ? jobData.tags.join(', ') : '-',
+                _rowInformation(
+                  LucideIcons.briefcase,
+                  "Job Level",
+                  jobData.jobLevel,
                 ),
               ],
             ),
             SizedBox(height: 25),
+
+            // Qualifications Section
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -267,7 +233,7 @@ class JobDetailPage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 10),
-                for (final req in jobData.requirements) qualificationItem(req),
+                for (final req in jobData.requirements) _qualificationItem(req),
               ],
             ),
             SizedBox(height: 20),
@@ -275,7 +241,7 @@ class JobDetailPage extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: EdgeInsetsGeometry.fromLTRB(35, 40, 35, 50),
+        padding: EdgeInsets.fromLTRB(35, 40, 35, 50),
         child: TextButton(
           style: TextButton.styleFrom(
             backgroundColor: AppColors.primaryBlue,
@@ -349,7 +315,7 @@ class JobDetailPage extends StatelessWidget {
                                         '/jobs-detail/confirmation-send',
                                       ),
                                   child: Text(
-                                    "I’m sure",
+                                    "I'm sure",
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 14,
@@ -405,7 +371,25 @@ class JobDetailPage extends StatelessWidget {
     );
   }
 
-  Widget rowInformation(IconData icon, String title, String info) {
+  Widget _buildTag(String text) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      decoration: BoxDecoration(
+        color: Color(0xFFF3F4F6),
+        borderRadius: BorderRadius.circular(9),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+          color: AppColors.darkGrey,
+        ),
+      ),
+    );
+  }
+
+  Widget _rowInformation(IconData icon, String title, String info) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -424,21 +408,25 @@ class JobDetailPage extends StatelessWidget {
             ),
           ],
         ),
-        Text(
-          info,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppColors.darkGrey,
+        Flexible(
+          child: Text(
+            info,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: AppColors.darkGrey,
+            ),
+            textAlign: TextAlign.right,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
     );
   }
 
-  Widget qualificationItem(String text) {
+  Widget _qualificationItem(String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 0),
+      padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
