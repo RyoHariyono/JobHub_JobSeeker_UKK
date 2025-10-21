@@ -180,7 +180,7 @@ class _SearchPageState extends State<SearchPage> {
                     final min = minSalaryController.text;
                     final max = maxSalaryController.text;
                     if (min.isNotEmpty && max.isNotEmpty) {
-                      return '\$min - \$max';
+                      return '\$$min - \$$max';
                     }
                     return 'min - max salary';
                   }
