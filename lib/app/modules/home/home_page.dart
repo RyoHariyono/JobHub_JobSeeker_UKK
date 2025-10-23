@@ -428,7 +428,7 @@ class _HomePageContentState extends State<HomePageContent> {
                       ), // Jarak kanan antar container
                       child: JobCard(
                         job: job,
-                        onTap: () => context.go('/jobs-detail', extra: job),
+                        onTap: () => context.push('/jobs-detail', extra: job),
                         onBookmarkTap: () => _toggleBookmark(job),
                       ),
                     );
@@ -501,7 +501,7 @@ class _HomePageContentState extends State<HomePageContent> {
                   child: JobCard(
                     job: job,
                     showFullDetails: false,
-                    onTap: () => context.go('/jobs-detail', extra: job),
+                    onTap: () => context.push('/jobs-detail', extra: job),
                     onBookmarkTap: () => _toggleBookmark(job),
                   ),
                 ),

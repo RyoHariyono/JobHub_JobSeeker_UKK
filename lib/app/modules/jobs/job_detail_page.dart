@@ -114,7 +114,12 @@ class _JobDetailPageState extends State<JobDetailPage> {
             color: AppColors.darkGrey,
             size: 24,
           ),
-          onPressed: () => context.go('/'),
+          onPressed: () async {
+            // Try to pop first (go back to the page that pushed this detail).
+            // If there's nothing to pop, fallback to going home.
+            if (await Navigator.maybePop(context)) return;
+            context.go('/');
+          },
         ),
         title: Text(
           "Detail Jobs",

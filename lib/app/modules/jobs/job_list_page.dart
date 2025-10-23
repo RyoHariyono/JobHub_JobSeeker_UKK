@@ -194,9 +194,10 @@ class _JobListPageState extends State<JobListPage> {
                         final job = jobs[index];
                         return Padding(
                           padding: EdgeInsets.only(bottom: 15),
-                          child: JobCard2(
+                          child: JobCard(
                             job: job,
-                            onTap: () => context.go('/jobs-detail', extra: job),
+                            onTap:
+                                () => context.push('/jobs-detail', extra: job),
                             onBookmarkTap: () => _toggleBookmark(job),
                           ),
                         );
