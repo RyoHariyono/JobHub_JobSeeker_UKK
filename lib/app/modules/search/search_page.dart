@@ -680,12 +680,26 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 70,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Text(
+          "Search Jobs",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: AppColors.darkGrey,
+          ),
+        ),
+        centerTitle: true,
+      ),
       backgroundColor: Colors.white,
       body: Column(
         children: [
           // Search bar
           Padding(
-            padding: EdgeInsets.fromLTRB(30, 70, 30, 10),
+            padding: EdgeInsets.fromLTRB(30, 0, 30, 10),
             child: Row(
               children: [
                 Expanded(

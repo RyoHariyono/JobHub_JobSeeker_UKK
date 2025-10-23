@@ -144,7 +144,7 @@ class _JobDetailPageState extends State<JobDetailPage> {
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(
           horizontal: _getHorizontalPadding(context),
-          vertical: 20,
+          vertical: 0,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
