@@ -32,6 +32,8 @@ class Job {
   final DateTime startDate;
   final String experience;
   final String jobLevel;
+  final bool isApplied;
+  final DateTime? appliedDate;
 
   const Job({
     required this.id,
@@ -53,6 +55,8 @@ class Job {
     DateTime? startDate,
     this.experience = '1-3 years',
     this.jobLevel = 'Mid Level',
+    this.isApplied = false,
+    this.appliedDate,
   }) : startDate = startDate ?? deadlineDate;
 
   String get categoryName {
@@ -120,6 +124,8 @@ class Job {
     DateTime? startDate,
     String? experience,
     String? jobLevel,
+    bool? isApplied,
+    DateTime? appliedDate,
   }) {
     return Job(
       id: id ?? this.id,
@@ -141,6 +147,8 @@ class Job {
       startDate: startDate ?? this.startDate,
       experience: experience ?? this.experience,
       jobLevel: jobLevel ?? this.jobLevel,
+      isApplied: isApplied ?? this.isApplied,
+      appliedDate: appliedDate ?? this.appliedDate,
     );
   }
 
@@ -166,6 +174,11 @@ class Job {
           json['startDate'] != null
               ? DateTime.parse(json['startDate'] as String)
               : null,
+      isApplied: json['isApplied'] as bool? ?? false,
+      appliedDate:
+          json['appliedDate'] != null
+              ? DateTime.parse(json['appliedDate'] as String)
+              : null,
       experience: json['experience'] as String? ?? '1-3 years',
       jobLevel: json['jobLevel'] as String? ?? 'Mid Level',
     );
@@ -187,6 +200,8 @@ class Job {
       'postedDate': postedDate.toIso8601String(),
       'deadlineDate': deadlineDate.toIso8601String(),
       'isBookmarked': isBookmarked,
+      'isApplied': isApplied,
+      'appliedDate': appliedDate?.toIso8601String(),
       'tags': tags,
       'capacity': capacity,
       'startDate': startDate.toIso8601String(),

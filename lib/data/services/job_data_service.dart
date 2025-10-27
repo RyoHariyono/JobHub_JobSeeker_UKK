@@ -459,4 +459,17 @@ class JobDataService {
     }
     return job;
   }
+
+  // Apply to a job (mark as applied)
+  static Job applyToJob(Job job, {DateTime? appliedDate}) {
+    final jobs = _allJobsNotifier.value;
+    final index = jobs.indexWhere((j) => j.id == job.id);
+    if (index != -1) {
+      final now = appliedDate ?? DateTime.now();
+      jobs[index] = job.copyWith(isApplied: true, appliedDate: now);
+      _allJobsNotifier.value = List<Job>.from(jobs);
+      return jobs[index];
+    }
+    return job;
+  }
 }
