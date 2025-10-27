@@ -77,16 +77,15 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  void _loadJobs() {
+  Future<void> _loadJobs() async {
     setState(() {
       isLoading = true;
     });
 
-    Future.delayed(Duration(milliseconds: 500), () {
-      setState(() {
-        filteredJobs = JobDataService.getAllJobs();
-        isLoading = false;
-      });
+    await Future.delayed(Duration(milliseconds: 500));
+    setState(() {
+      filteredJobs = JobDataService.getAllJobs();
+      isLoading = false;
     });
   }
 
@@ -852,76 +851,95 @@ class _SearchPageState extends State<SearchPage> {
 
           SizedBox(height: 16),
 
-          // Results
+          // Results with pull-to-refresh
           Expanded(
-            child:
-                isLoading
-                    ? ListView.separated(
-                      padding: EdgeInsets.fromLTRB(30, 10, 30, 50),
-                      itemCount: 8,
-                      separatorBuilder: (_, __) => SizedBox(height: 15),
-                      itemBuilder: (context, index) {
-                        return CardLoading(
-                          height: 70,
-                          borderRadius: BorderRadius.circular(16),
-                        );
-                      },
-                    )
-                    : filteredJobs.isEmpty
-                    ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            LucideIcons.searchX,
-                            size: 40,
-                            color: AppColors.mediumGrey,
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'No jobs found',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.mediumGrey,
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            'Try adjusting your filters',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.mediumGrey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                    : ListView.separated(
-                      padding: EdgeInsets.fromLTRB(30, 10, 30, 50),
-                      itemCount: filteredJobs.length,
-                      separatorBuilder: (_, __) => SizedBox(height: 15),
-                      itemBuilder: (context, index) {
-                        return JobCard2(
-                          job: filteredJobs[index],
-                          showFullDetails: false,
-                          onTap: () async {
-                            final job = filteredJobs[index];
-                            await context.push('/jobs-detail', extra: job);
-                            setState(() {
-                              final updatedJob = JobDataService.getAllJobs()
-                                  .firstWhere(
-                                    (j) => j.id == job.id,
-                                    orElse: () => job,
+            child: RefreshIndicator(
+              onRefresh: _loadJobs,
+              color: AppColors.primaryBlue,
+              backgroundColor: Colors.white,
+              child:
+                  isLoading
+                      ? ListView.separated(
+                        physics: AlwaysScrollableScrollPhysics(),
+                        padding: EdgeInsets.fromLTRB(30, 10, 30, 50),
+                        itemCount: 8,
+                        separatorBuilder: (_, __) => SizedBox(height: 15),
+                        itemBuilder: (context, index) {
+                          return CardLoading(
+                            height: 70,
+                            borderRadius: BorderRadius.circular(16),
+                          );
+                        },
+                      )
+                      : (filteredJobs.isEmpty
+                          ? ListView(
+                            physics: AlwaysScrollableScrollPhysics(),
+                            padding: EdgeInsets.fromLTRB(30, 10, 30, 50),
+                            children: [
+                              SizedBox(
+                                height: 220,
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        LucideIcons.searchX,
+                                        size: 40,
+                                        color: AppColors.mediumGrey,
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        'No jobs found',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.mediumGrey,
+                                        ),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        'Try adjusting your filters',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: AppColors.mediumGrey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                          : ListView.separated(
+                            physics: AlwaysScrollableScrollPhysics(),
+                            padding: EdgeInsets.fromLTRB(30, 10, 30, 50),
+                            itemCount: filteredJobs.length,
+                            separatorBuilder: (_, __) => SizedBox(height: 15),
+                            itemBuilder: (context, index) {
+                              return JobCard2(
+                                job: filteredJobs[index],
+                                showFullDetails: false,
+                                onTap: () async {
+                                  final job = filteredJobs[index];
+                                  await context.push(
+                                    '/jobs-detail',
+                                    extra: job,
                                   );
-                              filteredJobs[index] = updatedJob;
-                            });
-                          },
-                          onBookmarkTap:
-                              () => _toggleBookmark(filteredJobs[index]),
-                        );
-                      },
-                    ),
+                                  setState(() {
+                                    final updatedJob =
+                                        JobDataService.getAllJobs().firstWhere(
+                                          (j) => j.id == job.id,
+                                          orElse: () => job,
+                                        );
+                                    filteredJobs[index] = updatedJob;
+                                  });
+                                },
+                                onBookmarkTap:
+                                    () => _toggleBookmark(filteredJobs[index]),
+                              );
+                            },
+                          )),
+            ),
           ),
         ],
       ),

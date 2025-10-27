@@ -78,22 +78,21 @@ class _HomePageContentState extends State<HomePageContent> {
     });
   }
 
-  void _loadJobs() {
+  Future<void> _loadJobs() async {
     setState(() {
       isLoading = true;
     });
 
     // Simulate loading delay
-    Future.delayed(Duration(milliseconds: 500), () {
-      setState(() {
-        if (selectedCategory != null) {
-          popularJobs = JobDataService.getJobsByCategory(selectedCategory!);
-        } else {
-          popularJobs = JobDataService.getPopularJobs(limit: 4);
-        }
-        recommendationJobs = JobDataService.getRandomJobs(5);
-        isLoading = false;
-      });
+    await Future.delayed(Duration(milliseconds: 500));
+    setState(() {
+      if (selectedCategory != null) {
+        popularJobs = JobDataService.getJobsByCategory(selectedCategory!);
+      } else {
+        popularJobs = JobDataService.getPopularJobs(limit: 4);
+      }
+      recommendationJobs = JobDataService.getRandomJobs(5);
+      isLoading = false;
     });
   }
 
@@ -187,27 +186,33 @@ class _HomePageContentState extends State<HomePageContent> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(30, 50, 30, 35),
-          child: Column(
-            children: [
-              _buildAppBar(),
-              SizedBox(height: 15),
-              _buildTitle(fontSize: titleFontSize),
-              SizedBox(height: searchBarSpacing),
-              CustomSearchBar(
-                hintText: "Search your dream job here",
-                readOnly: true,
-                onTap: () => context.go('/search'),
-              ),
-              SizedBox(height: categorySpacing),
-              _buildCategoryMenu(),
-              SizedBox(height: popularSpacing),
-              _buildPopularVacancies(),
-              SizedBox(height: recommendationSpacing),
-              _buildRecommendationJobs(),
-            ],
+      body: RefreshIndicator(
+        onRefresh: _loadJobs,
+        color: AppColors.primaryBlue,
+        backgroundColor: Colors.white,
+        child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(30, 50, 30, 35),
+            child: Column(
+              children: [
+                _buildAppBar(),
+                SizedBox(height: 15),
+                _buildTitle(fontSize: titleFontSize),
+                SizedBox(height: searchBarSpacing),
+                CustomSearchBar(
+                  hintText: "Search your dream job here",
+                  readOnly: true,
+                  onTap: () => context.go('/search'),
+                ),
+                SizedBox(height: categorySpacing),
+                _buildCategoryMenu(),
+                SizedBox(height: popularSpacing),
+                _buildPopularVacancies(),
+                SizedBox(height: recommendationSpacing),
+                _buildRecommendationJobs(),
+              ],
+            ),
           ),
         ),
       ),

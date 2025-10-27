@@ -29,21 +29,23 @@ class _JobListPageState extends State<JobListPage> {
     _loadJobs();
   }
 
-  void _loadJobs() {
+  Future<void> _loadJobs() async {
     setState(() {
       isLoading = true;
     });
 
     // Simulate loading delay
-    Future.delayed(Duration(milliseconds: 500), () {
-      setState(() {
-        if (widget.category != null) {
-          jobs = JobDataService.getJobsByCategory(widget.category!);
-        } else {
-          jobs = JobDataService.getAllJobs();
-        }
-        isLoading = false;
-      });
+    await Future.delayed(Duration(milliseconds: 500));
+
+    if (!mounted) return;
+
+    setState(() {
+      if (widget.category != null) {
+        jobs = JobDataService.getJobsByCategory(widget.category!);
+      } else {
+        jobs = JobDataService.getAllJobs();
+      }
+      isLoading = false;
     });
   }
 
@@ -133,61 +135,72 @@ class _JobListPageState extends State<JobListPage> {
         ),
         centerTitle: true,
       ),
-      body:
-          isLoading
-              ? Padding(
-                padding: EdgeInsets.fromLTRB(30, 0, 30, 35),
-                child: ListView.builder(
-                  itemCount: 8,
-                  itemBuilder:
-                      (context, index) => Padding(
-                        padding: EdgeInsets.only(
-                          bottom: 15,
-                          top: index == 0 ? 20 : 0,
+      body: RefreshIndicator(
+        onRefresh: _loadJobs,
+        color: AppColors.primaryBlue,
+        backgroundColor: Colors.white,
+        child:
+            isLoading
+                ? Padding(
+                  padding: EdgeInsets.fromLTRB(30, 0, 30, 35),
+                  child: ListView.builder(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    itemCount: 8,
+                    itemBuilder:
+                        (context, index) => Padding(
+                          padding: EdgeInsets.only(
+                            bottom: 15,
+                            top: index == 0 ? 20 : 0,
+                          ),
+                          child: CardLoading(
+                            height: 130,
+                            borderRadius: BorderRadius.all(Radius.circular(12)),
+                          ),
                         ),
-                        child: CardLoading(
-                          height: 130,
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                  ),
+                )
+                : (jobs.isEmpty
+                    ? ListView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsets.fromLTRB(30, 0, 30, 35),
+                      children: [
+                        SizedBox(
+                          height: 220,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(height: 10),
+                                Icon(
+                                  LucideIcons.briefcase,
+                                  size: 64,
+                                  color: AppColors.mediumGrey,
+                                ),
+                                SizedBox(height: 16),
+                                Text(
+                                  'No jobs found',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.darkGrey,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Try searching for different keywords',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: AppColors.mediumGrey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                ),
-              )
-              : jobs.isEmpty
-              ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 10),
-                    Icon(
-                      LucideIcons.briefcase,
-                      size: 64,
-                      color: AppColors.mediumGrey,
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      'No jobs found',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.darkGrey,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'Try searching for different keywords',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.mediumGrey,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-              : Column(
-                children: [
-                  SizedBox(height: 10),
-                  Expanded(
-                    child: ListView.builder(
+                      ],
+                    )
+                    : ListView.builder(
+                      physics: AlwaysScrollableScrollPhysics(),
                       padding: EdgeInsets.fromLTRB(30, 0, 30, 35),
                       itemCount: jobs.length,
                       itemBuilder: (context, index) {
@@ -202,10 +215,8 @@ class _JobListPageState extends State<JobListPage> {
                           ),
                         );
                       },
-                    ),
-                  ),
-                ],
-              ),
+                    )),
+      ),
     );
   }
 }
