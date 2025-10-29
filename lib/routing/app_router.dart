@@ -7,6 +7,7 @@ import 'package:jobhub_jobseeker_ukk/app/modules/jobs/job_detail_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/jobs/job_list_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/notification/notification_paga.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/profile_page.dart';
+import 'package:jobhub_jobseeker_ukk/app/modules/profile/upload_cv_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/search/search_page.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
 import 'package:jobhub_jobseeker_ukk/data/models/job.dart';
@@ -128,6 +129,11 @@ class AppRouter {
         path: '/notification',
         name: 'notification',
         builder: (context, state) => const NotificationPaga(),
+      ),
+      GoRoute(
+        path: '/upload-cv',
+        name: 'upload-cv',
+        builder: (context, state) => const UploadCvPage(),
       ),
     ],
   );

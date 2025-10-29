@@ -51,7 +51,7 @@ class ProfilePage extends StatelessWidget {
                 SizedBox(height: 40),
 
                 GestureDetector(
-                  onTap: () => context.push('/profile/upload-cv'),
+                  onTap: () => context.go('/upload-cv'),
                   child: _UploadCvRow(
                     filename: 'Ryo_Hariyono_Angwyn.pdf',
                     width: width,
