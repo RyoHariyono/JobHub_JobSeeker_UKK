@@ -176,6 +176,43 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     );
   }
 
+  // Responsive methods
+  double _getHorizontalPadding(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 1200) return 120;
+    if (width > 768) return 80;
+    if (width > 600) return 50;
+    return 30;
+  }
+
+  double _getBodyFontSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 15;
+    if (width > 600) return 14.5;
+    return 14;
+  }
+
+  double _getLabelFontSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 15;
+    if (width > 600) return 14.5;
+    return 14;
+  }
+
+  double _getButtonFontSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 16;
+    if (width > 600) return 15.5;
+    return 16;
+  }
+
+  double _getSpacingValue(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 28;
+    if (width > 600) return 26;
+    return 25;
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -204,7 +241,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         title: Text(
           "Edit Profile",
           style: TextStyle(
-            fontSize: 16,
+            fontSize: _getLabelFontSize(context) + 2,
             fontWeight: FontWeight.w600,
             color: AppColors.darkGrey,
           ),
@@ -213,7 +250,12 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(30, 0, 30, 35),
+          padding: EdgeInsets.fromLTRB(
+            _getHorizontalPadding(context),
+            0,
+            _getHorizontalPadding(context),
+            35,
+          ),
           // Wrap with SingleChildScrollView so content can scroll when keyboard appears
           child: SingleChildScrollView(
             // ensure the scroll view resizes when the keyboard appears
@@ -221,7 +263,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
             child: Column(
-              spacing: 25,
+              spacing: _getSpacingValue(context),
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 10),
@@ -290,7 +332,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     Text(
                       "Gender",
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: _getLabelFontSize(context),
                         fontWeight: FontWeight.w400,
                         color: AppColors.mediumGrey,
                       ),
@@ -323,7 +365,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                 child: Text(
                                   'Male',
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: _getBodyFontSize(context),
                                     fontWeight: FontWeight.w600,
                                     color:
                                         selectedGender == 'Male'
@@ -361,7 +403,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                 child: Text(
                                   'Female',
                                   style: TextStyle(
-                                    fontSize: 14,
+                                    fontSize: _getBodyFontSize(context),
                                     fontWeight: FontWeight.w600,
                                     color:
                                         selectedGender == 'Female'
@@ -383,7 +425,12 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.fromLTRB(35, 40, 35, 50),
+        padding: EdgeInsets.fromLTRB(
+          _getHorizontalPadding(context) + 5,
+          40,
+          _getHorizontalPadding(context) + 5,
+          50,
+        ),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             backgroundColor:
@@ -398,7 +445,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           child: Text(
             _hasChanges ? 'Update data' : 'Edit your data',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: _getButtonFontSize(context),
               fontWeight: FontWeight.w600,
               color: _hasChanges ? Colors.white : Color(0xFF6B7280),
             ),
