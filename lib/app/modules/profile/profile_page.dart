@@ -75,46 +75,42 @@ class ProfilePage extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      _MenuItem(
-                        icon: LucideIcons.user,
-                        title: 'Profile',
-                        route: '/profile/edit',
-                        width: width,
+                      GestureDetector(
+                        onTap: () => context.go('/profile-edit'),
+                        child: _MenuItem(
+                          icon: LucideIcons.user,
+                          title: 'Profile',
+                          width: width,
+                        ),
                       ),
                       _MenuItem(
                         icon: LucideIcons.bookmark,
                         title: 'Favorite jobs',
-                        route: '/applications',
                         width: width,
                       ),
                       _MenuItem(
                         icon: LucideIcons.history,
                         title: 'Application history',
-                        route: '/profile/applications',
                         width: width,
                       ),
                       _MenuItem(
                         icon: LucideIcons.school,
                         title: 'Education',
-                        route: '/profile/education',
                         width: width,
                       ),
                       _MenuItem(
                         icon: LucideIcons.rocket,
                         title: 'Portofolio & skills',
-                        route: '/profile/portfolio',
                         width: width,
                       ),
                       _MenuItem(
                         icon: LucideIcons.settings,
                         title: 'Settings',
-                        route: '/profile/settings',
                         width: width,
                       ),
                       _MenuItem(
                         icon: LucideIcons.logOut,
                         title: 'Log Out',
-                        route: '/logout',
                         width: width,
                       ),
                     ],
@@ -411,14 +407,12 @@ class _UploadCvRow extends StatelessWidget {
 class _MenuItem extends StatelessWidget {
   final IconData icon;
   final String title;
-  final String route;
   final double width;
 
   const _MenuItem({
     Key? key,
     required this.icon,
     required this.title,
-    required this.route,
     required this.width,
   }) : super(key: key);
 
@@ -431,48 +425,43 @@ class _MenuItem extends StatelessWidget {
     final verticalPadding = width < 350 ? 13.0 : 16.0;
     final spacing = width < 350 ? 12.0 : 16.0;
 
-    return InkWell(
-      onTap: () => context.go(route),
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: horizontalPadding,
-          vertical: verticalPadding,
-        ),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Color(0xFFE5E7EB), width: 1),
-          ),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Icon(icon, size: iconSize, color: AppColors.primaryBlue),
-                  SizedBox(width: spacing),
-                  Flexible(
-                    child: Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: fontSize,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.darkGrey,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: horizontalPadding,
+        vertical: verticalPadding,
+      ),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB), width: 1)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Row(
+              children: [
+                Icon(icon, size: iconSize, color: AppColors.primaryBlue),
+                SizedBox(width: spacing),
+                Flexible(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.darkGrey,
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            Icon(
-              LucideIcons.chevronRight,
-              size: chevronSize,
-              color: AppColors.primaryBlue,
-            ),
-          ],
-        ),
+          ),
+          Icon(
+            LucideIcons.chevronRight,
+            size: chevronSize,
+            color: AppColors.primaryBlue,
+          ),
+        ],
       ),
     );
   }
