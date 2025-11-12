@@ -112,13 +112,12 @@ class _ApplicationHistoryPageState extends State<ApplicationHistoryPage> {
     super.dispose();
   }
 
-  // Responsive methods
-  double _getHorizontalPadding(BuildContext context) {
+  // Responsive methods (follow pattern from profile_edit_page)
+  double _getTitleFontSize(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
-    if (width > 1200) return 120;
-    if (width > 768) return 80;
-    if (width > 600) return 50;
-    return 30;
+    if (width > 768) return 18;
+    if (width > 600) return 16;
+    return 16;
   }
 
   double _getLabelFontSize(BuildContext context) {
@@ -126,6 +125,29 @@ class _ApplicationHistoryPageState extends State<ApplicationHistoryPage> {
     if (width > 768) return 15;
     if (width > 600) return 14.5;
     return 14;
+  }
+
+  double _getBodyFontSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 14.5;
+    if (width > 600) return 13.5;
+    return 12;
+  }
+
+  double _getSpacingValue(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 28;
+    if (width > 600) return 26;
+    return 25;
+  }
+
+  // Keep horizontal padding helper (from profile_edit_page) - not changing values per user instruction
+  double _getHorizontalPadding(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 1200) return 120;
+    if (width > 768) return 80;
+    if (width > 600) return 50;
+    return 30;
   }
 
   @override
@@ -149,7 +171,7 @@ class _ApplicationHistoryPageState extends State<ApplicationHistoryPage> {
                 ? Text(
                   "Application history",
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: _getTitleFontSize(context),
                     fontWeight: FontWeight.w600,
                     color: AppColors.darkGrey,
                   ),
@@ -242,7 +264,7 @@ class _ApplicationHistoryPageState extends State<ApplicationHistoryPage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 25),
+                      SizedBox(height: _getSpacingValue(context)),
 
                       // Applications List
                       if (filteredApplications.isEmpty)
@@ -378,7 +400,7 @@ class _ApplicationHistoryPageState extends State<ApplicationHistoryPage> {
                     Text(
                       job.company.name,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: _getBodyFontSize(context),
                         fontWeight: FontWeight.w400,
                         color: AppColors.mediumGrey,
                       ),
@@ -399,7 +421,7 @@ class _ApplicationHistoryPageState extends State<ApplicationHistoryPage> {
               Text(
                 job.location,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: _getBodyFontSize(context),
                   fontWeight: FontWeight.w500,
                   color: AppColors.mediumGrey,
                 ),
@@ -407,7 +429,7 @@ class _ApplicationHistoryPageState extends State<ApplicationHistoryPage> {
               Text(
                 job.salaryRange + '/month',
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: _getBodyFontSize(context),
                   fontWeight: FontWeight.w500,
                   color: AppColors.mediumGrey,
                 ),
@@ -423,7 +445,7 @@ class _ApplicationHistoryPageState extends State<ApplicationHistoryPage> {
               Text(
                 "Applied on",
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: _getBodyFontSize(context),
                   fontWeight: FontWeight.w500,
                   color: AppColors.mediumGrey,
                 ),
@@ -433,7 +455,7 @@ class _ApplicationHistoryPageState extends State<ApplicationHistoryPage> {
                     ? _formatDate(job.appliedDate!)
                     : "Unknown",
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: _getBodyFontSize(context),
                   fontWeight: FontWeight.w500,
                   color: AppColors.mediumGrey,
                 ),
@@ -451,7 +473,7 @@ class _ApplicationHistoryPageState extends State<ApplicationHistoryPage> {
             child: Text(
               "Applied",
               style: TextStyle(
-                fontSize: 12,
+                fontSize: _getBodyFontSize(context),
                 fontWeight: FontWeight.w500,
                 color: Colors.white,
               ),
