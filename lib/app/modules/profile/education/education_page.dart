@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
+import 'package:jobhub_jobseeker_ukk/shared/widgets/bottom_button.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class EducationPage extends StatelessWidget {
@@ -26,6 +27,21 @@ class EducationPage extends StatelessWidget {
     if (width > 768) return 14.5;
     if (width > 600) return 13.5;
     return 12;
+  }
+
+  double _getHorizontalPadding(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 1200) return 120;
+    if (width > 768) return 80;
+    if (width > 600) return 50;
+    return 30;
+  }
+
+  double _getButtonFontSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 16;
+    if (width > 600) return 15.5;
+    return 16;
   }
 
   @override
@@ -55,7 +71,12 @@ class EducationPage extends StatelessWidget {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(30, 30, 30, 35),
+        padding: EdgeInsets.fromLTRB(
+          30,
+          _getHorizontalPadding(context),
+          30,
+          _getHorizontalPadding(context),
+        ),
         child: Column(
           children: [
             Container(
@@ -159,27 +180,9 @@ class EducationPage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.fromLTRB(30, 40, 30, 50),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryBlue,
-            padding: EdgeInsets.symmetric(vertical: 17),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 0,
-          ),
-          onPressed: () => context.go('/education/add-education'),
-          child: Text(
-            "Add education",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-        ),
+      bottomNavigationBar: BottomButton(
+        label: 'Add education',
+        onPressed: () => context.go('/education/add-education'),
       ),
     );
   }

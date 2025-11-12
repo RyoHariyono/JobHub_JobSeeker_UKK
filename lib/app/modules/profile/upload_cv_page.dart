@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
+import 'package:jobhub_jobseeker_ukk/shared/widgets/bottom_button.dart';
 import 'package:jobhub_jobseeker_ukk/shared/widgets/notification.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -186,7 +187,6 @@ class _UploadCvPageState extends State<UploadCvPage> {
     final subtitleTextSize = screenWidth > 360 ? 12.0 : 11.0;
     final cardIconSize = screenWidth > 360 ? 24.0 : 22.0;
     final cardTextSize = screenWidth > 360 ? 14.0 : 13.0;
-    final buttonTextSize = screenWidth > 360 ? 16.0 : 14.0;
     final appBarTextSize = screenWidth > 360 ? 16.0 : 15.0;
     final spacingAfterUpload = screenHeight > 700 ? 50.0 : screenHeight * 0.06;
 
@@ -345,28 +345,10 @@ class _UploadCvPageState extends State<UploadCvPage> {
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.fromLTRB(35, 40, 35, 50),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor:
-                hasNewFile ? AppColors.primaryBlue : Color(0xFFF3F4F6),
-            padding: EdgeInsets.symmetric(vertical: 17),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 0,
-          ),
-          onPressed: hasNewFile ? _onEditPressed : null,
-          child: Text(
-            hasNewFile ? 'Upload CV' : 'Select your CV',
-            style: TextStyle(
-              fontSize: buttonTextSize,
-              fontWeight: FontWeight.w600,
-              color: hasNewFile ? Colors.white : Color(0xFF6B7280),
-            ),
-          ),
-        ),
+      bottomNavigationBar: BottomButton(
+        label: hasNewFile ? 'Upload CV' : 'Select your CV',
+        onPressed: _onEditPressed,
+        isDisabled: !hasNewFile,
       ),
     );
   }

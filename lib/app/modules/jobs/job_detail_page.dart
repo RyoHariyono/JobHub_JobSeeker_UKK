@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
+import 'package:jobhub_jobseeker_ukk/shared/widgets/bottom_button.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:jobhub_jobseeker_ukk/data/models/job.dart';
 import 'package:jobhub_jobseeker_ukk/data/services/job_data_service.dart';
@@ -98,6 +99,108 @@ class _JobDetailPageState extends State<JobDetailPage> {
     if (width > 768) return 50;
     if (width > 600) return 45;
     return 40;
+  }
+
+  void _Dialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder:
+          (context) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            insetPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            child: Container(
+              width: 343,
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Double-checking… ready to apply?",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.darkGrey,
+                    ),
+                    textAlign: TextAlign.start,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "You can change your mind later — feel free to cancel anytime.",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.normal,
+                      color: AppColors.mediumGrey,
+                    ),
+                    textAlign: TextAlign.start,
+                  ),
+                  SizedBox(height: 30),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryBlue,
+                            padding: EdgeInsets.symmetric(vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            elevation: 0,
+                          ),
+                          onPressed:
+                              () =>
+                                  context.go('/jobs-detail/confirmation-send'),
+                          child: Text(
+                            "I'm sure",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(
+                              color: AppColors.primaryBlue,
+                              width: 2,
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            "Cancel",
+                            style: TextStyle(
+                              color: AppColors.primaryBlue,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+    );
   }
 
   @override
@@ -316,133 +419,11 @@ class _JobDetailPageState extends State<JobDetailPage> {
           ],
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.fromLTRB(35, 40, 35, 50),
-        child: TextButton(
-          style: TextButton.styleFrom(
-            backgroundColor: AppColors.primaryBlue,
-            padding: EdgeInsets.symmetric(vertical: 17),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          onPressed: () {
-            showDialog(
-              context: context,
-              barrierDismissible: true,
-              builder:
-                  (context) => Dialog(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    insetPadding: EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 20,
-                    ),
-                    child: Container(
-                      width: 343,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 24,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "Double-checking… ready to apply?",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.darkGrey,
-                            ),
-                            textAlign: TextAlign.start,
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            "You can change your mind later — feel free to cancel anytime.",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.normal,
-                              color: AppColors.mediumGrey,
-                            ),
-                            textAlign: TextAlign.start,
-                          ),
-                          SizedBox(height: 30),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.primaryBlue,
-                                    padding: EdgeInsets.symmetric(vertical: 15),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    elevation: 0,
-                                  ),
-                                  onPressed:
-                                      () => context.go(
-                                        '/jobs-detail/confirmation-send',
-                                      ),
-                                  child: Text(
-                                    "I'm sure",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Expanded(
-                                child: OutlinedButton(
-                                  style: OutlinedButton.styleFrom(
-                                    side: BorderSide(
-                                      color: AppColors.primaryBlue,
-                                      width: 2,
-                                    ),
-                                    padding: EdgeInsets.symmetric(vertical: 15),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text(
-                                    "Cancel",
-                                    style: TextStyle(
-                                      color: AppColors.primaryBlue,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-            );
-          },
-          child: Text(
-            "Apply Now",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-        ),
+      bottomNavigationBar: BottomButton(
+        label: "Apply Now",
+        onPressed: () {
+          _Dialog();
+        },
       ),
     );
   }

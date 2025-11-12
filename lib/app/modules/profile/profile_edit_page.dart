@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
+import 'package:jobhub_jobseeker_ukk/shared/widgets/bottom_button.dart';
 import 'package:jobhub_jobseeker_ukk/shared/widgets/date_input.dart';
 import 'package:jobhub_jobseeker_ukk/shared/widgets/notification.dart';
 import 'package:jobhub_jobseeker_ukk/shared/widgets/textfield.dart';
@@ -424,33 +425,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.fromLTRB(
-          _getHorizontalPadding(context) + 5,
-          40,
-          _getHorizontalPadding(context) + 5,
-          50,
-        ),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor:
-                _hasChanges ? AppColors.primaryBlue : Color(0xFFF3F4F6),
-            padding: EdgeInsets.symmetric(vertical: 17),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 0,
-          ),
-          onPressed: _hasChanges ? _onUpdatePressed : null,
-          child: Text(
-            _hasChanges ? 'Update data' : 'Edit your data',
-            style: TextStyle(
-              fontSize: _getButtonFontSize(context),
-              fontWeight: FontWeight.w600,
-              color: _hasChanges ? Colors.white : Color(0xFF6B7280),
-            ),
-          ),
-        ),
+      bottomNavigationBar: BottomButton(
+        label: _hasChanges ? 'Update data' : 'Edit your data',
+        onPressed: _onUpdatePressed,
+        isDisabled: !_hasChanges,
       ),
     );
   }

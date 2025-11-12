@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
+import 'package:jobhub_jobseeker_ukk/shared/widgets/bottom_button.dart';
 import 'package:jobhub_jobseeker_ukk/shared/widgets/notification.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -765,38 +766,10 @@ class _AddEducationPageState extends State<AddEducationPage> {
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.fromLTRB(
-          _getHorizontalPadding(context) + 5,
-          40,
-          _getHorizontalPadding(context) + 5,
-          50,
-        ),
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor:
-                _isValidForm() ? AppColors.primaryBlue : Color(0xFFF3F4F6),
-            padding: EdgeInsets.symmetric(vertical: 17),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 0,
-          ),
-          onPressed:
-              _isValidForm()
-                  ? () {
-                    _showSuccessDialog();
-                  }
-                  : null,
-          child: Text(
-            _isValidForm() ? "Insert education" : "Fill all fields",
-            style: TextStyle(
-              fontSize: _getButtonFontSize(context),
-              fontWeight: FontWeight.w600,
-              color: _isValidForm() ? Colors.white : Color(0xFF6B7280),
-            ),
-          ),
-        ),
+      bottomNavigationBar: BottomButton(
+        label: _isValidForm() ? "Insert education" : "Fill all fields",
+        onPressed: _showSuccessDialog,
+        isDisabled: !_isValidForm(),
       ),
     );
   }
