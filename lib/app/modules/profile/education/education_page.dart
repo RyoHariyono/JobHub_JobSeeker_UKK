@@ -170,7 +170,7 @@ class EducationPage extends StatelessWidget {
             ),
             elevation: 0,
           ),
-          onPressed: () {},
+          onPressed: () => context.go('/education/add-education'),
           child: Text(
             "Add education",
             style: TextStyle(

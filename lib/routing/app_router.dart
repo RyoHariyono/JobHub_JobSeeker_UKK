@@ -7,7 +7,8 @@ import 'package:jobhub_jobseeker_ukk/app/modules/jobs/job_detail_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/jobs/job_list_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/notification/notification_paga.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/application_history_page.dart';
-import 'package:jobhub_jobseeker_ukk/app/modules/profile/education_page.dart';
+import 'package:jobhub_jobseeker_ukk/app/modules/profile/education/add_education_page.dart';
+import 'package:jobhub_jobseeker_ukk/app/modules/profile/education/education_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/profile_edit_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/profile_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/upload_cv_page.dart';
@@ -152,6 +153,13 @@ class AppRouter {
         path: '/education',
         name: 'education',
         builder: (context, state) => EducationPage(),
+        routes: [
+          GoRoute(
+            path: '/add-education',
+            name: 'add-education',
+            builder: (context, state) => AddEducationPage(),
+          ),
+        ],
       ),
     ],
   );
