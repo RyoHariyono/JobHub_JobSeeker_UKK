@@ -469,7 +469,7 @@ class _AddEducationPageState extends State<AddEducationPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "Are you sure to update your profile?",
+                    "Are you sure to update your education?",
                     style: TextStyle(
                       fontSize: screenWidth > 360 ? 16 : 14,
                       fontWeight: FontWeight.w600,
@@ -479,7 +479,7 @@ class _AddEducationPageState extends State<AddEducationPage> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    "Your profile information will be updated and visible to employers.",
+                    "Your education information will be updated and visible to employers.",
                     style: TextStyle(
                       fontSize: screenWidth > 360 ? 14 : 12,
                       fontWeight: FontWeight.normal,
