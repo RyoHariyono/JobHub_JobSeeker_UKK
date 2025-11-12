@@ -43,6 +43,7 @@ dependencies:
   dashed_border: ^1.0.2
   file_picker: ^10.3.3
   toastification: ^3.0.3
+  supabase_flutter: ^2.10.3
 
 dev_dependencies:
   flutter_test:
