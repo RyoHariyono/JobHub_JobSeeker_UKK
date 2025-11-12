@@ -83,10 +83,13 @@ class ProfilePage extends StatelessWidget {
                           width: width,
                         ),
                       ),
-                      _MenuItem(
-                        icon: LucideIcons.bookmark,
-                        title: 'Favorite jobs',
-                        width: width,
+                      GestureDetector(
+                        onTap: () => context.go('/applications'),
+                        child: _MenuItem(
+                          icon: LucideIcons.bookmark,
+                          title: 'Favorite jobs',
+                          width: width,
+                        ),
                       ),
                       _MenuItem(
                         icon: LucideIcons.history,
