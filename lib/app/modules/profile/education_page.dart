@@ -6,6 +6,28 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 class EducationPage extends StatelessWidget {
   const EducationPage({super.key});
 
+  // Responsive methods (follow pattern from profile_edit_page)
+  double _getTitleFontSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 18;
+    if (width > 600) return 16;
+    return 16;
+  }
+
+  double _getLabelFontSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 15;
+    if (width > 600) return 14.5;
+    return 14;
+  }
+
+  double _getBodyFontSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 14.5;
+    if (width > 600) return 13.5;
+    return 12;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +47,7 @@ class EducationPage extends StatelessWidget {
         title: Text(
           "Education",
           style: TextStyle(
-            fontSize: 16,
+            fontSize: _getTitleFontSize(context),
             fontWeight: FontWeight.w600,
             color: AppColors.darkGrey,
           ),
@@ -77,7 +99,7 @@ class EducationPage extends StatelessWidget {
                           Text(
                             "SMK Telkom Malang",
                             style: TextStyle(
-                              fontSize: 14,
+                              fontSize: _getLabelFontSize(context),
                               fontWeight: FontWeight.w500,
                               color: AppColors.darkGrey,
                             ),
@@ -85,7 +107,7 @@ class EducationPage extends StatelessWidget {
                           Text(
                             "Computer and Network Engineering",
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: _getBodyFontSize(context),
                               fontWeight: FontWeight.w400,
                               color: AppColors.mediumGrey,
                             ),
@@ -108,7 +130,7 @@ class EducationPage extends StatelessWidget {
                         child: Text(
                           "2017 - 2021",
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: _getBodyFontSize(context),
                             fontWeight: FontWeight.w500,
                             color: Colors.white,
                           ),
@@ -123,7 +145,7 @@ class EducationPage extends StatelessWidget {
                         child: Text(
                           "GPA 9.4",
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: _getBodyFontSize(context),
                             fontWeight: FontWeight.w500,
                             color: Colors.white,
                           ),
@@ -152,7 +174,7 @@ class EducationPage extends StatelessWidget {
           child: Text(
             "Add education",
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 16,
               fontWeight: FontWeight.w600,
               color: Colors.white,
             ),
