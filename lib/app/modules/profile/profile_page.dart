@@ -107,10 +107,13 @@ class ProfilePage extends StatelessWidget {
                           width: width,
                         ),
                       ),
-                      _MenuItem(
-                        icon: LucideIcons.rocket,
-                        title: 'Portofolio & skills',
-                        width: width,
+                      GestureDetector(
+                        onTap: () => context.go('/skills-portofolio'),
+                        child: _MenuItem(
+                          icon: LucideIcons.rocket,
+                          title: 'Portofolio & skills',
+                          width: width,
+                        ),
                       ),
                       _MenuItem(
                         icon: LucideIcons.settings,

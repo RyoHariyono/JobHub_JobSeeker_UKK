@@ -11,6 +11,7 @@ import 'package:jobhub_jobseeker_ukk/app/modules/profile/education/add_education
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/education/education_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/profile_edit_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/profile_page.dart';
+import 'package:jobhub_jobseeker_ukk/app/modules/profile/skillsPoortofolio/skills_portofolio_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/upload_cv_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/search/search_page.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
@@ -160,6 +161,18 @@ class AppRouter {
             builder: (context, state) => AddEducationPage(),
           ),
         ],
+      ),
+      GoRoute(
+        path: '/skills-portofolio',
+        name: 'skills-portofolio',
+        builder: (context, state) => SkillsPortofolioPage(),
+        // routes: [
+        //   GoRoute(
+        //     path: '/add-skills-portofolio',
+        //     name: 'add-skills-portofolio',
+        //     builder: (context, state) => AddEducationPage(),
+        //   ),
+        // ],
       ),
     ],
   );
