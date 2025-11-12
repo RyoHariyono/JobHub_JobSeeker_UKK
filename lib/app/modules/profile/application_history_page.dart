@@ -18,6 +18,7 @@ class _ApplicationHistoryPageState extends State<ApplicationHistoryPage> {
   String _selectedCategory = 'this_week'; // 'this_week' or 'last_month'
   String _searchQuery = '';
   bool isLoading = true;
+  bool _isSearching = false; // NEW: Track if search mode is active
   List<Job> filteredApplications = [];
 
   @override
@@ -144,7 +145,7 @@ class _ApplicationHistoryPageState extends State<ApplicationHistoryPage> {
           onPressed: () => context.go('/profile'),
         ),
         title:
-            _searchQuery.isEmpty
+            !_isSearching
                 ? Text(
                   "Application history",
                   style: TextStyle(
@@ -168,14 +169,12 @@ class _ApplicationHistoryPageState extends State<ApplicationHistoryPage> {
                   autofocus: true,
                 ),
         actions: [
-          if (_searchQuery.isEmpty)
+          if (!_isSearching)
             IconButton(
               onPressed: () {
                 setState(() {
-                  _searchQuery = '';
-                  _searchController.clear();
+                  _isSearching = true;
                 });
-                _filterApplications();
               },
               icon: Icon(
                 LucideIcons.search,
@@ -187,6 +186,7 @@ class _ApplicationHistoryPageState extends State<ApplicationHistoryPage> {
             IconButton(
               onPressed: () {
                 setState(() {
+                  _isSearching = false;
                   _searchQuery = '';
                   _searchController.clear();
                 });
@@ -195,7 +195,7 @@ class _ApplicationHistoryPageState extends State<ApplicationHistoryPage> {
               icon: Icon(LucideIcons.x, color: AppColors.darkGrey, size: 24),
             ),
         ],
-        centerTitle: !(_searchQuery.isNotEmpty),
+        centerTitle: !_isSearching,
       ),
       body: RefreshIndicator(
         onRefresh: _loadData,
