@@ -1,7 +1,124 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
+import 'package:jobhub_jobseeker_ukk/shared/widgets/notification.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+
+// Data models
+class EducationLevel {
+  final String id;
+  final String name;
+  final List<String> institutions;
+  final List<String>? majors;
+
+  EducationLevel({
+    required this.id,
+    required this.name,
+    required this.institutions,
+    this.majors,
+  });
+}
+
+final List<EducationLevel> educationLevels = [
+  EducationLevel(
+    id: 'smp',
+    name: 'SMP',
+    institutions: [
+      'SMP Negeri 1 Jakarta',
+      'SMP Negeri 2 Bandung',
+      'SMP Negeri 3 Surabaya',
+      'SMP Swasta Al-Azhar',
+      'SMP Santa Ursula',
+      'Lainnya',
+    ],
+    majors: null,
+  ),
+  EducationLevel(
+    id: 'sma',
+    name: 'SMA/SMK',
+    institutions: [
+      'SMA Negeri 1 Jakarta',
+      'SMA Negeri 3 Bandung',
+      'SMK Telkom Malang',
+      'SMA Swasta Binus',
+      'SMA Santa Ursula',
+      'SMK Negeri 1 Surabaya',
+      'Lainnya',
+    ],
+    majors: ['IPA', 'IPS', 'Teknik', 'Akuntansi', 'Lainnya'],
+  ),
+  EducationLevel(
+    id: 'd3',
+    name: 'D3',
+    institutions: [
+      'Politeknik Negeri Jakarta',
+      'Politeknik Bandung',
+      'Politeknik Surabaya',
+      'Politeknik Telkom',
+      'Lainnya',
+    ],
+    majors: [
+      'Teknik Informatika',
+      'Teknik Elektro',
+      'Akuntansi',
+      'Manajemen',
+      'Lainnya',
+    ],
+  ),
+  EducationLevel(
+    id: 's1',
+    name: 'S1',
+    institutions: [
+      'Universitas Indonesia',
+      'Institut Teknologi Bandung',
+      'Universitas Gadjah Mada',
+      'Institut Teknologi Sepuluh Nopember',
+      'Universitas Diponegoro',
+      'Universitas Airlangga',
+      'Universitas Padjadjaran',
+      'Universitas Brawijaya',
+      'Universitas Hasanuddin',
+      'Lainnya',
+    ],
+    majors: [
+      'Teknik Informatika',
+      'Sistem Informasi',
+      'Teknik Elektro',
+      'Manajemen',
+      'Akuntansi',
+      'Hukum',
+      'Kedokteran',
+      'Psikologi',
+      'Desain Komunikasi Visual',
+      'Ilmu Komunikasi',
+      'Ekonomi',
+      'Lainnya',
+    ],
+  ),
+  EducationLevel(
+    id: 's2',
+    name: 'S2',
+    institutions: [
+      'Universitas Indonesia',
+      'Institut Teknologi Bandung',
+      'Universitas Gadjah Mada',
+      'Institut Teknologi Sepuluh Nopember',
+      'Lainnya',
+    ],
+    majors: ['Teknik Informatika', 'Manajemen', 'Hukum', 'Ekonomi', 'Lainnya'],
+  ),
+  EducationLevel(
+    id: 's3',
+    name: 'S3',
+    institutions: [
+      'Universitas Indonesia',
+      'Institut Teknologi Bandung',
+      'Universitas Gadjah Mada',
+      'Lainnya',
+    ],
+    majors: ['Teknik Informatika', 'Manajemen', 'Ekonomi', 'Lainnya'],
+  ),
+];
 
 class AddEducationPage extends StatefulWidget {
   const AddEducationPage({super.key});
@@ -19,6 +136,11 @@ class _AddEducationPageState extends State<AddEducationPage> {
   TextEditingController yearsStartController = TextEditingController();
   TextEditingController yearsEndController = TextEditingController();
   TextEditingController gpaController = TextEditingController();
+
+  EducationLevel? getCurrentLevel() {
+    if (selectedLevel == null) return null;
+    return educationLevels.firstWhere((level) => level.id == selectedLevel);
+  }
 
   // Responsive methods
   double _getTitleFontSize(BuildContext context) {
@@ -42,6 +164,45 @@ class _AddEducationPageState extends State<AddEducationPage> {
     return 15;
   }
 
+  bool _isValidYear(String input) {
+    if (input.isEmpty) return false;
+    final year = int.tryParse(input);
+    if (year == null) return false;
+    final currentYear = DateTime.now().year;
+    return year >= 1900 && year <= currentYear;
+  }
+
+  bool _isValidGPA(String input) {
+    if (input.isEmpty) return false;
+    final gpa = double.tryParse(input);
+    if (gpa == null) return false;
+    return gpa >= 0 && gpa <= 4;
+  }
+
+  bool _isValidForm() {
+    bool hasValidPeriod = true;
+    if (yearsStartController.text.isNotEmpty &&
+        !_isValidYear(yearsStartController.text)) {
+      hasValidPeriod = false;
+    }
+    if (!isCurrentlyStudying &&
+        yearsEndController.text.isNotEmpty &&
+        !_isValidYear(yearsEndController.text)) {
+      hasValidPeriod = false;
+    }
+
+    bool hasValidGPA = true;
+    if (gpaController.text.isNotEmpty && !_isValidGPA(gpaController.text)) {
+      hasValidGPA = false;
+    }
+
+    return selectedLevel != null &&
+        selectedInstitution != null &&
+        (getCurrentLevel()?.majors == null || selectedMajor != null) &&
+        hasValidPeriod &&
+        hasValidGPA;
+  }
+
   Widget _devider() {
     return Column(
       children: [
@@ -49,6 +210,34 @@ class _AddEducationPageState extends State<AddEducationPage> {
         Divider(height: 0, color: Color(0xFFE5E7EB)),
         SizedBox(height: 25),
       ],
+    );
+  }
+
+  Widget _buildLevelButton(EducationLevel level) {
+    final isSelected = selectedLevel == level.id;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedLevel = level.id;
+          selectedInstitution = null;
+          selectedMajor = null;
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: isSelected ? AppColors.primaryBlue : Color(0xFFF3F4F6),
+        ),
+        child: Text(
+          level.name,
+          style: TextStyle(
+            fontSize: 14,
+            color: isSelected ? Colors.white : Color(0xFF6B7280),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
     );
   }
 
@@ -79,6 +268,9 @@ class _AddEducationPageState extends State<AddEducationPage> {
           border: InputBorder.none,
           contentPadding: EdgeInsets.zero,
         ),
+        onChanged: (value) {
+          setState(() {});
+        },
         enabled: !(label == 'Period end' && isCurrentlyStudying),
       ),
     );
@@ -130,6 +322,10 @@ class _AddEducationPageState extends State<AddEducationPage> {
   }
 
   void _showInstitutionPicker() {
+    if (selectedLevel == null) return;
+    final level = getCurrentLevel();
+    if (level == null) return;
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -137,21 +333,6 @@ class _AddEducationPageState extends State<AddEducationPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
-        final institutions = [
-          'Universitas Indonesia',
-          'Institut Teknologi Bandung',
-          'Universitas Gadjah Mada',
-          'Institut Teknologi Sepuluh Nopember',
-          'Universitas Diponegoro',
-          'Universitas Airlangga',
-          'Universitas Padjadjaran',
-          'Universitas Brawijaya',
-          'Universitas Hasanuddin',
-          'SMK Telkom Malang',
-          'SMA Negeri 1 Jakarta',
-          'Lainnya',
-        ];
-
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -177,7 +358,7 @@ class _AddEducationPageState extends State<AddEducationPage> {
               child: SingleChildScrollView(
                 child: Column(
                   children:
-                      institutions.map((institution) {
+                      level.institutions.map((institution) {
                         return ListTile(
                           title: Text(
                             institution,
@@ -202,6 +383,10 @@ class _AddEducationPageState extends State<AddEducationPage> {
   }
 
   void _showMajorPicker() {
+    if (selectedLevel == null) return;
+    final level = getCurrentLevel();
+    if (level?.majors == null) return;
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -209,21 +394,6 @@ class _AddEducationPageState extends State<AddEducationPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
-        final major = [
-          'Teknik Informatika',
-          'Sistem Informasi',
-          'Teknik Elektro',
-          'Manajemen',
-          'Akuntansi',
-          'Hukum',
-          'Kedokteran',
-          'Psikologi',
-          'Desain Komunikasi Visual',
-          'Ilmu Komunikasi',
-          'Ekonomi',
-          'Lainnya',
-        ];
-
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -249,7 +419,7 @@ class _AddEducationPageState extends State<AddEducationPage> {
               child: SingleChildScrollView(
                 child: Column(
                   children:
-                      major.map((major) {
+                      (level?.majors ?? []).map((major) {
                         return ListTile(
                           title: Text(
                             major,
@@ -273,8 +443,127 @@ class _AddEducationPageState extends State<AddEducationPage> {
     );
   }
 
+  void _showSuccessDialog() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final dialogWidth = screenWidth > 400 ? 343.0 : screenWidth * 0.85;
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder:
+          (context) => Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            insetPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            child: Container(
+              width: dialogWidth,
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Are you sure to update your profile?",
+                    style: TextStyle(
+                      fontSize: screenWidth > 360 ? 16 : 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.darkGrey,
+                    ),
+                    textAlign: TextAlign.start,
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "Your profile information will be updated and visible to employers.",
+                    style: TextStyle(
+                      fontSize: screenWidth > 360 ? 14 : 12,
+                      fontWeight: FontWeight.normal,
+                      color: AppColors.mediumGrey,
+                    ),
+                    textAlign: TextAlign.start,
+                  ),
+                  SizedBox(height: 30),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryBlue,
+                            padding: EdgeInsets.symmetric(vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            elevation: 0,
+                          ),
+                          onPressed: () => context.go('/education'),
+                          child: Text(
+                            "I'm sure",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: screenWidth > 360 ? 14 : 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(
+                              color: AppColors.primaryBlue,
+                              width: 2,
+                            ),
+                            padding: EdgeInsets.symmetric(vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            "Cancel",
+                            style: TextStyle(
+                              color: AppColors.primaryBlue,
+                              fontSize: screenWidth > 360 ? 14 : 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+    );
+  }
+
+  double _getHorizontalPadding(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 1200) return 120;
+    if (width > 768) return 80;
+    if (width > 600) return 50;
+    return 30;
+  }
+
+  double _getButtonFontSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width > 768) return 16;
+    if (width > 600) return 15.5;
+    return 16;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 600;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -292,7 +581,7 @@ class _AddEducationPageState extends State<AddEducationPage> {
         title: Text(
           "Add Education",
           style: TextStyle(
-            fontSize: 16,
+            fontSize: _getLabelFontSize(context) + 2,
             fontWeight: FontWeight.w600,
             color: AppColors.darkGrey,
           ),
@@ -300,7 +589,12 @@ class _AddEducationPageState extends State<AddEducationPage> {
         centerTitle: true,
       ),
       body: Padding(
-        padding: EdgeInsets.fromLTRB(30, 30, 30, 35),
+        padding: EdgeInsets.fromLTRB(
+          _getHorizontalPadding(context),
+          30,
+          _getHorizontalPadding(context),
+          35,
+        ),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -320,98 +614,10 @@ class _AddEducationPageState extends State<AddEducationPage> {
                   Wrap(
                     spacing: 15,
                     runSpacing: 15,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Color(0xFFF3F4F6),
-                        ),
-                        child: Text(
-                          "SMP",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF6B7280),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Color(0xFFF3F4F6),
-                        ),
-                        child: Text(
-                          "SMA/SMK",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF6B7280),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Color(0xFFF3F4F6),
-                        ),
-                        child: Text(
-                          "D3",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF6B7280),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: AppColors.primaryBlue,
-                        ),
-                        child: Text(
-                          "S1",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Color(0xFFF3F4F6),
-                        ),
-                        child: Text(
-                          "S2",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF6B7280),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Color(0xFFF3F4F6),
-                        ),
-                        child: Text(
-                          "S3",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF6B7280),
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
+                    children:
+                        educationLevels
+                            .map((level) => _buildLevelButton(level))
+                            .toList(),
                   ),
                 ],
               ),
@@ -422,13 +628,14 @@ class _AddEducationPageState extends State<AddEducationPage> {
                   _buildInputField(
                     'Institution',
                     selectedInstitution ?? 'Choose institution',
-                    _showInstitutionPicker,
+                    selectedLevel == null ? () {} : _showInstitutionPicker,
                   ),
-                  _buildInputField(
-                    'Major',
-                    selectedMajor ?? 'Choose major',
-                    _showMajorPicker,
-                  ),
+                  if (getCurrentLevel()?.majors != null)
+                    _buildInputField(
+                      'Major',
+                      selectedMajor ?? 'Choose major',
+                      selectedLevel == null ? () {} : _showMajorPicker,
+                    ),
                 ],
               ),
               _devider(),
@@ -453,12 +660,14 @@ class _AddEducationPageState extends State<AddEducationPage> {
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                     ),
-                    Text(
-                      'Are you still studying here?',
-                      style: TextStyle(
-                        fontSize: _getBodyFontSize(context),
-                        color: AppColors.darkGrey,
-                        fontWeight: FontWeight.w500,
+                    Flexible(
+                      child: Text(
+                        'Are you still studying here?',
+                        style: TextStyle(
+                          fontSize: _getBodyFontSize(context),
+                          color: AppColors.darkGrey,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
@@ -480,7 +689,7 @@ class _AddEducationPageState extends State<AddEducationPage> {
                           ),
                         ),
                         SizedBox(height: 8),
-                        _buildYearsInput('Period start', yearsStartController),
+                        _buildYearsInput('e.g. 2020', yearsStartController),
                       ],
                     ),
                   ),
@@ -509,28 +718,27 @@ class _AddEducationPageState extends State<AddEducationPage> {
                                 child: Text(
                                   'Now',
                                   style: TextStyle(
-                                    color: Color(0xFF6B7280),
+                                    color: AppColors.primaryBlue,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
                               ),
                             )
-                            : _buildYearsInput(
-                              'Period end',
-                              yearsEndController,
-                            ),
+                            : _buildYearsInput('e.g. 2024', yearsEndController),
                       ],
                     ),
                   ),
                 ],
               ),
-              _devider(),
+              if (isMobile) SizedBox(height: 25),
+              if (!isMobile) _devider(),
               Row(
                 children: [
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 8,
                       children: [
                         Text(
                           "GPA",
@@ -540,8 +748,7 @@ class _AddEducationPageState extends State<AddEducationPage> {
                             color: AppColors.mediumGrey,
                           ),
                         ),
-                        SizedBox(height: 8),
-                        _buildYearsInput('Your GPA', gpaController),
+                        _buildYearsInput('e.g. 3.75', gpaController),
                       ],
                     ),
                   ),
@@ -559,23 +766,34 @@ class _AddEducationPageState extends State<AddEducationPage> {
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: EdgeInsets.fromLTRB(30, 40, 30, 50),
+        padding: EdgeInsets.fromLTRB(
+          _getHorizontalPadding(context) + 5,
+          40,
+          _getHorizontalPadding(context) + 5,
+          50,
+        ),
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryBlue,
+            backgroundColor:
+                _isValidForm() ? AppColors.primaryBlue : Color(0xFFF3F4F6),
             padding: EdgeInsets.symmetric(vertical: 17),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
             elevation: 0,
           ),
-          onPressed: () => context.go('/education/add-education'),
+          onPressed:
+              _isValidForm()
+                  ? () {
+                    _showSuccessDialog();
+                  }
+                  : null,
           child: Text(
-            "Insert education",
+            _isValidForm() ? "Insert education" : "Fill all fields",
             style: TextStyle(
-              fontSize: 16,
+              fontSize: _getButtonFontSize(context),
               fontWeight: FontWeight.w600,
-              color: Colors.white,
+              color: _isValidForm() ? Colors.white : Color(0xFF6B7280),
             ),
           ),
         ),
