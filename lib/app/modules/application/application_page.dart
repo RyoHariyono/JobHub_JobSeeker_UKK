@@ -134,7 +134,6 @@ class _ApplicationPageState extends State<ApplicationPage> {
                             ],
                           ),
                         );
-
                         sectionChildren.add(SizedBox(height: 12));
 
                         if (applications.isEmpty) {
@@ -170,7 +169,16 @@ class _ApplicationPageState extends State<ApplicationPage> {
                             ),
                           );
                         } else {
-                          for (var job in applications) {
+                          // Tentukan jumlah job yang ditampilkan
+                          final displayedCount =
+                              _isExpanded
+                                  ? applications.length
+                                  : (applications.length > 2
+                                      ? 2
+                                      : applications.length);
+
+                          for (int i = 0; i < displayedCount; i++) {
+                            final job = applications[i];
                             sectionChildren.add(
                               Padding(
                                 padding: EdgeInsets.only(bottom: 12),
@@ -186,10 +194,46 @@ class _ApplicationPageState extends State<ApplicationPage> {
                               ),
                             );
                           }
+
+                          // Tampilkan button "See more/See less" hanya jika ada lebih dari 2 aplikasi
+                          if (applications.length > 2) {
+                            sectionChildren.add(
+                              GestureDetector(
+                                onTap:
+                                    () => setState(
+                                      () => _isExpanded = !_isExpanded,
+                                    ),
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.symmetric(vertical: 14),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: Color(0xFFE5E7EB),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        _isExpanded
+                                            ? 'See less applications'
+                                            : 'See more applications',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.mediumGrey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
                         }
-
                         sectionChildren.add(SizedBox(height: 40));
-
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: sectionChildren,
