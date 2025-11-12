@@ -9,6 +9,7 @@ import 'package:jobhub_jobseeker_ukk/app/modules/notification/notification_paga.
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/application_history_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/education/add_education_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/education/education_page.dart';
+import 'package:jobhub_jobseeker_ukk/app/modules/profile/log_out_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/profile_edit_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/profile_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/skillsPoortofolio/add_portofolio_skills_page.dart';
@@ -174,6 +175,11 @@ class AppRouter {
             builder: (context, state) => AddPortofolioSkillsPage(),
           ),
         ],
+      ),
+      GoRoute(
+        path: '/log-out',
+        name: 'log-out',
+        builder: (context, state) => LogOutPage(),
       ),
     ],
   );

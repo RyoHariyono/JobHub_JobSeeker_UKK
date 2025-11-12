@@ -5,9 +5,110 @@ import 'package:go_router/go_router.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
-
   @override
   Widget build(BuildContext context) {
+    void _showSuccessDialog() {
+      final screenWidth = MediaQuery.of(context).size.width;
+      final dialogWidth = screenWidth > 400 ? 343.0 : screenWidth * 0.85;
+      showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder:
+            (context) => Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              insetPadding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              child: Container(
+                width: dialogWidth,
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Are you sure you want to log out?",
+                      style: TextStyle(
+                        fontSize: screenWidth > 360 ? 16 : 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.darkGrey,
+                      ),
+                      textAlign: TextAlign.start,
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      "We'll be here whenever you're ready to come back!",
+                      style: TextStyle(
+                        fontSize: screenWidth > 360 ? 14 : 12,
+                        fontWeight: FontWeight.normal,
+                        color: AppColors.mediumGrey,
+                      ),
+                      textAlign: TextAlign.start,
+                    ),
+                    SizedBox(height: 30),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryBlue,
+                              padding: EdgeInsets.symmetric(vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              elevation: 0,
+                            ),
+                            onPressed: () => context.go('/log-out'),
+                            child: Text(
+                              "I'm sure",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: screenWidth > 360 ? 14 : 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(
+                                color: AppColors.primaryBlue,
+                                width: 2,
+                              ),
+                              padding: EdgeInsets.symmetric(vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              "Cancel",
+                              style: TextStyle(
+                                color: AppColors.primaryBlue,
+                                fontSize: screenWidth > 360 ? 14 : 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -126,11 +227,16 @@ class ProfilePage extends StatelessWidget {
                         width: width,
                         borderBottom: true,
                       ),
-                      _MenuItem(
-                        icon: LucideIcons.logOut,
-                        title: 'Log Out',
-                        width: width,
-                        borderBottom: false,
+                      GestureDetector(
+                        onTap: () {
+                          _showSuccessDialog();
+                        },
+                        child: _MenuItem(
+                          icon: LucideIcons.logOut,
+                          title: 'Log Out',
+                          width: width,
+                          borderBottom: false,
+                        ),
                       ),
                     ],
                   ),
