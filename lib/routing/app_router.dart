@@ -6,6 +6,7 @@ import 'package:jobhub_jobseeker_ukk/app/modules/jobs/Confirmation_send_page.dar
 import 'package:jobhub_jobseeker_ukk/app/modules/jobs/job_detail_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/jobs/job_list_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/notification/notification_paga.dart';
+import 'package:jobhub_jobseeker_ukk/app/modules/profile/application_history_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/profile_edit_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/profile_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/upload_cv_page.dart';
@@ -140,6 +141,11 @@ class AppRouter {
         path: '/profile-edit',
         name: 'profile-edit',
         builder: (context, state) => ProfileEditPage(),
+      ),
+      GoRoute(
+        path: '/application-history',
+        name: 'application-history',
+        builder: (context, state) => ApplicationHistoryPage(),
       ),
     ],
   );

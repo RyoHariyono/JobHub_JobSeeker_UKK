@@ -91,10 +91,13 @@ class ProfilePage extends StatelessWidget {
                           width: width,
                         ),
                       ),
-                      _MenuItem(
-                        icon: LucideIcons.history,
-                        title: 'Application history',
-                        width: width,
+                      GestureDetector(
+                        onTap: () => context.go('/application-history'),
+                        child: _MenuItem(
+                          icon: LucideIcons.history,
+                          title: 'Application history',
+                          width: width,
+                        ),
                       ),
                       _MenuItem(
                         icon: LucideIcons.school,
