@@ -117,11 +117,13 @@ class _ApplicationItemState extends State<ApplicationItem> {
                     // Bookmark
                     IconButton(
                       icon: Icon(
-                        LucideIcons.bookmark,
+                        job.isBookmarked
+                            ? Icons.bookmark
+                            : LucideIcons.bookmark,
                         size: 20,
                         color:
                             job.isBookmarked
-                                ? AppColors.primaryBlue
+                                ? AppColors.red
                                 : AppColors.mediumGrey,
                       ),
                       onPressed: widget.onBookmarkTap,

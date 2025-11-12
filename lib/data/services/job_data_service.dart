@@ -117,6 +117,8 @@ class JobDataService {
       capacity: 3,
       experience: '5+ years',
       jobLevel: 'Senior Level',
+      isApplied: true,
+      appliedDate: DateTime.now().subtract(Duration(days: 5)),
     ),
     Job(
       id: 'job_3',
@@ -197,6 +199,8 @@ class JobDataService {
       capacity: 3,
       experience: '3+ years',
       jobLevel: 'Mid to Senior Level',
+      isApplied: true,
+      appliedDate: DateTime.now().subtract(Duration(days: 2)),
     ),
     Job(
       id: 'job_6',
@@ -251,6 +255,8 @@ class JobDataService {
       capacity: 2,
       experience: '3+ years',
       jobLevel: 'Mid Level',
+      isApplied: true,
+      appliedDate: DateTime.now().subtract(Duration(days: 8)),
     ),
     Job(
       id: 'job_8',
@@ -305,6 +311,8 @@ class JobDataService {
       capacity: 3,
       experience: '4+ years',
       jobLevel: 'Senior Level',
+      isApplied: true,
+      appliedDate: DateTime.now().subtract(Duration(days: 15)),
     ),
     Job(
       id: 'job_10',
@@ -359,6 +367,8 @@ class JobDataService {
       capacity: 2,
       experience: '4+ years',
       jobLevel: 'Senior Level',
+      isApplied: true,
+      appliedDate: DateTime.now().subtract(Duration(days: 12)),
     ),
     Job(
       id: 'job_12',

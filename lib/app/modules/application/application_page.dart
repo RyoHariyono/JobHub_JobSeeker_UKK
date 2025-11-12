@@ -95,7 +95,7 @@ class _ApplicationPageState extends State<ApplicationPage> {
                       builder: (context, jobs, _) {
                         final appliedJobs =
                             jobs.where((j) => j.isApplied).toList();
-                        final applications = appliedJobs.take(2).toList();
+                        final applications = appliedJobs;
                         final List<Widget> sectionChildren = [];
 
                         sectionChildren.add(
