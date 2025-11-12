@@ -44,6 +44,24 @@ class SkillsPortofolioPage extends StatelessWidget {
     return 16;
   }
 
+  Widget _skillChip(String Skills, context) {
+    return Container(
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        color: AppColors.primaryBlue,
+      ),
+      child: Text(
+        Skills,
+        style: TextStyle(
+          fontSize: _getBodyFontSize(context),
+          fontWeight: FontWeight.w500,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,68 +130,43 @@ class SkillsPortofolioPage extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        spacing: 3,
-                        children: [
-                          Text(
-                            "JobHub",
-                            style: TextStyle(
-                              fontSize: _getLabelFontSize(context),
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.darkGrey,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          spacing: 3,
+                          children: [
+                            Text(
+                              "JobHub",
+                              style: TextStyle(
+                                fontSize: _getLabelFontSize(context),
+                                fontWeight: FontWeight.w500,
+                                color: AppColors.darkGrey,
+                              ),
                             ),
-                          ),
-                          Text(
-                            "Ini adalah teks yang sangat panjang dan akan dipotong dengan ellipsis",
-                            style: TextStyle(
-                              fontSize: _getBodyFontSize(context),
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.mediumGrey,
+                            Text(
+                              "A platform help us to find a perfect job for you based on your skills and preferences.",
+                              style: TextStyle(
+                                fontSize: _getBodyFontSize(context),
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.mediumGrey,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
                             ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
                   Row(
                     spacing: 10,
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: AppColors.primaryBlue,
-                        ),
-                        child: Text(
-                          "2017 - 2021",
-                          style: TextStyle(
-                            fontSize: _getBodyFontSize(context),
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: AppColors.primaryBlue,
-                        ),
-                        child: Text(
-                          "GPA 9.4",
-                          style: TextStyle(
-                            fontSize: _getBodyFontSize(context),
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
+                      _skillChip("UI/UX Design", context),
+                      _skillChip("Flutter Dev", context),
+                      _skillChip("Web Dev", context),
                     ],
                   ),
                 ],
@@ -183,7 +176,7 @@ class SkillsPortofolioPage extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomButton(
-        label: 'Add education',
+        label: 'Add Portofolio',
         onPressed: () => context.go('/education/add-education'),
       ),
     );
