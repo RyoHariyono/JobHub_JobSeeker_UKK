@@ -177,7 +177,7 @@ class SkillsPortofolioPage extends StatelessWidget {
       ),
       bottomNavigationBar: BottomButton(
         label: 'Add Portofolio',
-        onPressed: () => context.go('/education/add-education'),
+        onPressed: () => context.go('/skills-portofolio/add-skills-portofolio'),
       ),
     );
   }
