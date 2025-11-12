@@ -81,6 +81,7 @@ class ProfilePage extends StatelessWidget {
                           icon: LucideIcons.user,
                           title: 'Profile',
                           width: width,
+                          borderBottom: true,
                         ),
                       ),
                       GestureDetector(
@@ -89,6 +90,7 @@ class ProfilePage extends StatelessWidget {
                           icon: LucideIcons.bookmark,
                           title: 'Favorite jobs',
                           width: width,
+                          borderBottom: true,
                         ),
                       ),
                       GestureDetector(
@@ -97,6 +99,7 @@ class ProfilePage extends StatelessWidget {
                           icon: LucideIcons.history,
                           title: 'Application history',
                           width: width,
+                          borderBottom: true,
                         ),
                       ),
                       GestureDetector(
@@ -105,6 +108,7 @@ class ProfilePage extends StatelessWidget {
                           icon: LucideIcons.school,
                           title: 'Education',
                           width: width,
+                          borderBottom: true,
                         ),
                       ),
                       GestureDetector(
@@ -113,17 +117,20 @@ class ProfilePage extends StatelessWidget {
                           icon: LucideIcons.rocket,
                           title: 'Portofolio & skills',
                           width: width,
+                          borderBottom: true,
                         ),
                       ),
                       _MenuItem(
                         icon: LucideIcons.settings,
                         title: 'Settings',
                         width: width,
+                        borderBottom: true,
                       ),
                       _MenuItem(
                         icon: LucideIcons.logOut,
                         title: 'Log Out',
                         width: width,
+                        borderBottom: false,
                       ),
                     ],
                   ),
@@ -420,12 +427,14 @@ class _MenuItem extends StatelessWidget {
   final IconData icon;
   final String title;
   final double width;
+  final bool borderBottom;
 
   const _MenuItem({
     Key? key,
     required this.icon,
     required this.title,
     required this.width,
+    required this.borderBottom,
   }) : super(key: key);
 
   @override
@@ -443,7 +452,12 @@ class _MenuItem extends StatelessWidget {
         vertical: verticalPadding,
       ),
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB), width: 1)),
+        border: Border(
+          bottom:
+              borderBottom
+                  ? BorderSide(color: Color(0xFFE5E7EB), width: 1)
+                  : BorderSide.none,
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
