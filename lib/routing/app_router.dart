@@ -7,6 +7,7 @@ import 'package:jobhub_jobseeker_ukk/app/modules/jobs/job_detail_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/jobs/job_list_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/notification/notification_paga.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/application_history_page.dart';
+import 'package:jobhub_jobseeker_ukk/app/modules/profile/education_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/profile_edit_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/profile_page.dart';
 import 'package:jobhub_jobseeker_ukk/app/modules/profile/upload_cv_page.dart';
@@ -146,6 +147,11 @@ class AppRouter {
         path: '/application-history',
         name: 'application-history',
         builder: (context, state) => ApplicationHistoryPage(),
+      ),
+      GoRoute(
+        path: '/education',
+        name: 'education',
+        builder: (context, state) => EducationPage(),
       ),
     ],
   );

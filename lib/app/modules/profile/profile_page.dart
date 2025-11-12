@@ -99,10 +99,13 @@ class ProfilePage extends StatelessWidget {
                           width: width,
                         ),
                       ),
-                      _MenuItem(
-                        icon: LucideIcons.school,
-                        title: 'Education',
-                        width: width,
+                      GestureDetector(
+                        onTap: () => context.go('/education'),
+                        child: _MenuItem(
+                          icon: LucideIcons.school,
+                          title: 'Education',
+                          width: width,
+                        ),
                       ),
                       _MenuItem(
                         icon: LucideIcons.rocket,
