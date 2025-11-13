@@ -4,9 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
 import 'package:jobhub_jobseeker_ukk/data/models/job.dart';
+import 'package:jobhub_jobseeker_ukk/data/models/company.dart';
 import 'package:jobhub_jobseeker_ukk/shared/widgets/custom_search_bar.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:jobhub_jobseeker_ukk/data/services/job_data_service.dart';
+import 'package:jobhub_jobseeker_ukk/data/services/job_service.dart'
+    hide JobCategory, JobType;
 import 'package:jobhub_jobseeker_ukk/shared/widgets/job_card_2.dart';
 
 class SearchPage extends StatefulWidget {
@@ -17,6 +20,9 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  final JobService _jobService = JobService();
+  List<Job> allJobs = [];
+
   // Returns true if any filter is active (other than search text)
   bool _hasActiveFilters() {
     return selectedPosition != null ||
@@ -33,10 +39,24 @@ class _SearchPageState extends State<SearchPage> {
     return filters.join(', ');
   }
 
-  void _toggleBookmark(Job job) {
-    JobDataService.toggleBookmark(job);
-    // Re-apply filters to refresh job list and sync bookmark status
-    _applyFilters();
+  Future<void> _toggleBookmark(Job job) async {
+    HapticFeedback.lightImpact();
+
+    try {
+      final isFavorited = await _jobService.isFavorited(job.id);
+
+      if (isFavorited) {
+        await _jobService.removeFromFavorites(job.id);
+      } else {
+        await _jobService.addToFavorites(job.id);
+      }
+
+      // Reload to update bookmark status
+      await _loadJobs();
+      _applyFilters();
+    } catch (e) {
+      print('Error toggling bookmark: $e');
+    }
   }
 
   List<String> searchHistory = [];
@@ -82,11 +102,114 @@ class _SearchPageState extends State<SearchPage> {
       isLoading = true;
     });
 
-    await Future.delayed(Duration(milliseconds: 500));
-    setState(() {
-      filteredJobs = JobDataService.getAllJobs();
-      isLoading = false;
-    });
+    try {
+      // Load jobs from Supabase
+      final jobs = await _jobService.getJobs(activeOnly: true);
+
+      // Load favorites
+      Set<String> favoriteIds = {};
+      try {
+        final favorites = await _jobService.getFavoriteJobs();
+        favoriteIds =
+            favorites
+                .where((fav) => fav['jobs'] != null)
+                .map((fav) => fav['jobs']['id'] as String)
+                .toSet();
+      } catch (e) {
+        print('Could not load favorites: $e');
+      }
+
+      // Convert to Job models
+      final convertedJobs = _convertToJobModels(jobs, favoriteIds);
+
+      if (mounted) {
+        setState(() {
+          allJobs = convertedJobs;
+          filteredJobs = convertedJobs;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading jobs: $e');
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
+
+  List<Job> _convertToJobModels(
+    List<Map<String, dynamic>> supabaseJobs,
+    Set<String> favoriteIds,
+  ) {
+    return supabaseJobs.map((jobData) {
+      final company = jobData['companies'];
+      return Job(
+        id: jobData['id'],
+        title: jobData['title'] ?? 'Unknown',
+        company: Company(
+          id: company['id'],
+          name: company['name'] ?? 'Unknown Company',
+          logoUrl: company['logo_url'] ?? '',
+          location: company['location'] ?? '',
+          description: company['description'] ?? company['industry'] ?? '',
+        ),
+        category: _parseCategory(jobData['category']),
+        type: _parseJobType(jobData['type']),
+        location: jobData['location'] ?? '',
+        minSalary: (jobData['min_salary'] ?? 0).toDouble(),
+        maxSalary: (jobData['max_salary'] ?? 0).toDouble(),
+        description: jobData['description'] ?? '',
+        requirements: [],
+        postedDate: DateTime.parse(jobData['posted_date']),
+        deadlineDate: DateTime.parse(jobData['deadline_date']),
+        isBookmarked: favoriteIds.contains(jobData['id']),
+        tags: [],
+        capacity: jobData['capacity'] ?? 1,
+        startDate:
+            jobData['start_date'] != null
+                ? DateTime.parse(jobData['start_date'])
+                : DateTime.now(),
+        experience: jobData['experience_required'] ?? '',
+        jobLevel: jobData['job_level'] ?? '',
+      );
+    }).toList();
+  }
+
+  JobCategory _parseCategory(String? category) {
+    switch (category?.toLowerCase()) {
+      case 'frontend':
+        return JobCategory.frontendDevelopment;
+      case 'backend':
+        return JobCategory.backendDevelopment;
+      case 'fullstack':
+      case 'mobile':
+        return JobCategory.softwareDevelopment;
+      case 'ui_ux':
+        return JobCategory.uiuxDesign;
+      case 'devops':
+        return JobCategory.devopsCloud;
+      default:
+        return JobCategory.softwareDevelopment;
+    }
+  }
+
+  JobType _parseJobType(String? type) {
+    switch (type?.toLowerCase()) {
+      case 'full_time':
+        return JobType.fullTime;
+      case 'part_time':
+        return JobType.partTime;
+      case 'contract':
+        return JobType.contract;
+      case 'freelance':
+        return JobType.freelance;
+      case 'internship':
+        return JobType.internship;
+      default:
+        return JobType.fullTime;
+    }
   }
 
   void _applyFilters({bool addToHistory = false}) {
@@ -101,7 +224,18 @@ class _SearchPageState extends State<SearchPage> {
       isLoading = true;
     });
     Future.delayed(Duration(milliseconds: 300), () {
-      List<Job> jobs = JobDataService.getAllJobs();
+      List<Job> jobs = List.from(allJobs);
+
+      // Filter by search query first
+      if (searchController.text.isNotEmpty) {
+        final query = searchController.text.toLowerCase();
+        jobs =
+            jobs.where((job) {
+              return job.title.toLowerCase().contains(query) ||
+                  job.company.name.toLowerCase().contains(query) ||
+                  job.description.toLowerCase().contains(query);
+            }).toList();
+      }
 
       // Filter by position
       if (selectedPosition != null) {
@@ -131,11 +265,6 @@ class _SearchPageState extends State<SearchPage> {
         double maxSalary =
             double.tryParse(maxSalaryController.text) ?? double.infinity;
         jobs = jobs.where((job) => job.maxSalary <= maxSalary).toList();
-      }
-
-      // Filter by search query
-      if (searchController.text.isNotEmpty) {
-        jobs = JobDataService.searchJobs(searchController.text);
       }
 
       setState(() {
