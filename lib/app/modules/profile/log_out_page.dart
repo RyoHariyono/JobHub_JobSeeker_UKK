@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
+import 'package:jobhub_jobseeker_ukk/data/services/auth_service.dart';
 import 'package:go_router/go_router.dart';
 
 class LogOutPage extends StatefulWidget {
@@ -10,14 +11,32 @@ class LogOutPage extends StatefulWidget {
 }
 
 class _LogOutPageState extends State<LogOutPage> {
+  final AuthService _authService = AuthService();
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 5), () {
+    _handleLogout();
+  }
+
+  Future<void> _handleLogout() async {
+    try {
+      await _authService.signOut();
+      await Future.delayed(const Duration(seconds: 3));
       if (mounted) {
+        context.go('/login');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Logout failed: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
         context.go('/');
       }
-    });
+    }
   }
 
   // Responsive font size untuk title

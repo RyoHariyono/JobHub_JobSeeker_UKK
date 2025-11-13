@@ -19,12 +19,33 @@ import 'package:jobhub_jobseeker_ukk/app/modules/search/search_page.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
 import 'package:jobhub_jobseeker_ukk/data/models/job.dart';
 import 'package:jobhub_jobseeker_ukk/data/models/company.dart';
+import 'package:jobhub_jobseeker_ukk/features/auth/splash_page.dart';
+import 'package:jobhub_jobseeker_ukk/features/auth/login_page.dart';
+import 'package:jobhub_jobseeker_ukk/features/auth/signup_page.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/',
+    initialLocation: '/splash',
     routes: [
+      // Splash Screen
+      GoRoute(
+        path: '/splash',
+        name: 'splash',
+        builder: (context, state) => const SplashPage(),
+      ),
+      // Login Page
+      GoRoute(
+        path: '/login',
+        name: 'login',
+        builder: (context, state) => const LoginPage(),
+      ),
+      // Sign Up Page
+      GoRoute(
+        path: '/signup',
+        name: 'signup',
+        builder: (context, state) => const SignUpPage(),
+      ),
       // Bottom Navigation Shell
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
