@@ -1,10 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
+import 'package:jobhub_jobseeker_ukk/data/services/profile_service.dart';
+import 'package:jobhub_jobseeker_ukk/data/services/job_service.dart' as job_svc;
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  final ProfileService _profileService = ProfileService();
+  final job_svc.JobService _jobService = job_svc.JobService();
+
+  String _fullName = 'Loading...';
+  String _email = 'loading@email.com';
+  String? _profilePhotoUrl;
+  String? _cvFileName;
+  int _applicationsCount = 0;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+  }
+
+  Future<void> _loadProfileData() async {
+    try {
+      final profile = await _profileService.getProfile();
+      final applications = await _jobService.getUserApplications();
+
+      if (mounted) {
+        setState(() {
+          _fullName = profile?['full_name'] ?? 'User';
+          _email = profile?['email'] ?? 'user@email.com';
+          _profilePhotoUrl = profile?['profile_photo_url'];
+
+          // Extract CV filename from URL
+          if (profile != null && profile['cv_file_url'] != null) {
+            final cvUrl = profile['cv_file_url'] as String;
+            _cvFileName = cvUrl.split('/').last;
+          }
+
+          _applicationsCount = applications.length;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        print('Error loading profile: $e');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     void _showSuccessDialog() {
@@ -132,32 +185,46 @@ class ProfilePage extends StatelessWidget {
             final width = constraints.maxWidth;
             return Column(
               children: [
-                Center(
-                  child: Column(
-                    children: [
-                      _ProfileAvatar(width: width),
-                      SizedBox(height: 8),
-                      _ProfileNameEmail(
-                        name: 'Ryo',
-                        email: 'ryo@gmail.com',
-                        width: width,
+                if (_isLoading)
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(50),
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryBlue,
                       ),
-                    ],
+                    ),
+                  )
+                else ...[
+                  Center(
+                    child: Column(
+                      children: [
+                        _ProfileAvatar(
+                          width: width,
+                          photoUrl: _profilePhotoUrl,
+                        ),
+                        SizedBox(height: 8),
+                        _ProfileNameEmail(
+                          name: _fullName,
+                          email: _email,
+                          width: width,
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(height: 30),
+                  SizedBox(height: 30),
 
-                _StatsCard(width: width),
-
-                SizedBox(height: 40),
-
-                GestureDetector(
-                  onTap: () => context.go('/upload-cv'),
-                  child: _UploadCvRow(
-                    filename: 'Ryo_Hariyono_Angwyn.pdf',
+                  _StatsCard(
                     width: width,
+                    applicationsCount: _applicationsCount,
                   ),
-                ),
+
+                  SizedBox(height: 40),
+
+                  GestureDetector(
+                    onTap: () => context.go('/upload-cv'),
+                    child: _UploadCvRow(filename: _cvFileName, width: width),
+                  ),
+                ],
 
                 SizedBox(height: 15),
 
@@ -252,7 +319,9 @@ class ProfilePage extends StatelessWidget {
 
 class _ProfileAvatar extends StatelessWidget {
   final double width;
-  const _ProfileAvatar({Key? key, required this.width}) : super(key: key);
+  final String? photoUrl;
+  const _ProfileAvatar({Key? key, required this.width, this.photoUrl})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -264,24 +333,37 @@ class _ProfileAvatar extends StatelessWidget {
         border: Border.all(color: Color(0xFFE5E7EB), width: 1),
       ),
       child: ClipOval(
-        child: Image.asset(
-          'assets/images/profile_picture.png',
-          width: size,
-          height: size,
-          fit: BoxFit.cover,
-          errorBuilder:
-              (context, error, stackTrace) => Container(
-                width: size,
-                height: size,
-                color: AppColors.mediumGrey,
-                alignment: Alignment.center,
-                child: Icon(
-                  Icons.person,
-                  size: size * 0.53,
-                  color: AppColors.darkGrey,
+        child:
+            photoUrl != null
+                ? Image.network(
+                  photoUrl!,
+                  width: size,
+                  height: size,
+                  fit: BoxFit.cover,
+                  errorBuilder:
+                      (context, error, stackTrace) => Container(
+                        width: size,
+                        height: size,
+                        color: AppColors.mediumGrey,
+                        alignment: Alignment.center,
+                        child: Icon(
+                          Icons.person,
+                          size: size * 0.53,
+                          color: AppColors.darkGrey,
+                        ),
+                      ),
+                )
+                : Container(
+                  width: size,
+                  height: size,
+                  color: AppColors.mediumGrey,
+                  alignment: Alignment.center,
+                  child: Icon(
+                    Icons.person,
+                    size: size * 0.53,
+                    color: AppColors.darkGrey,
+                  ),
                 ),
-              ),
-        ),
       ),
     );
   }
@@ -330,7 +412,9 @@ class _ProfileNameEmail extends StatelessWidget {
 
 class _StatsCard extends StatelessWidget {
   final double width;
-  const _StatsCard({Key? key, required this.width}) : super(key: key);
+  final int applicationsCount;
+  const _StatsCard({Key? key, required this.width, this.applicationsCount = 0})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -374,7 +458,7 @@ class _StatsCard extends StatelessWidget {
                 ),
                 SizedBox(height: 5),
                 Text(
-                  '1 Jobs',
+                  '$applicationsCount Jobs',
                   style: TextStyle(
                     fontSize: valueFontSize,
                     fontWeight: FontWeight.w500,
@@ -447,10 +531,10 @@ class _StatsCard extends StatelessWidget {
 }
 
 class _UploadCvRow extends StatelessWidget {
-  final String filename;
+  final String? filename;
   final double width;
 
-  const _UploadCvRow({Key? key, required this.filename, required this.width})
+  const _UploadCvRow({Key? key, this.filename, required this.width})
     : super(key: key);
 
   @override
@@ -485,11 +569,14 @@ class _UploadCvRow extends StatelessWidget {
         children: [
           Flexible(
             child: Text(
-              filename,
+              filename ?? 'No CV uploaded yet',
               style: TextStyle(
                 fontSize: filenameFontSize,
                 fontWeight: FontWeight.w500,
-                color: AppColors.darkGrey,
+                color:
+                    filename != null
+                        ? AppColors.darkGrey
+                        : AppColors.mediumGrey,
               ),
               overflow: TextOverflow.ellipsis,
             ),

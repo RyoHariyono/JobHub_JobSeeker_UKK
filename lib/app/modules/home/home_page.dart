@@ -4,7 +4,11 @@ import 'package:card_loading/card_loading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
 import 'package:jobhub_jobseeker_ukk/data/models/job.dart';
+import 'package:jobhub_jobseeker_ukk/data/models/company.dart';
 import 'package:jobhub_jobseeker_ukk/data/services/job_data_service.dart';
+import 'package:jobhub_jobseeker_ukk/data/services/job_service.dart'
+    hide JobCategory, JobType;
+import 'package:jobhub_jobseeker_ukk/data/services/profile_service.dart';
 import 'package:jobhub_jobseeker_ukk/shared/widgets/job_card.dart';
 import 'package:jobhub_jobseeker_ukk/shared/widgets/menu_card.dart';
 import 'package:jobhub_jobseeker_ukk/shared/widgets/custom_search_bar.dart';
@@ -21,11 +25,16 @@ class HomePageContent extends StatefulWidget {
 }
 
 class _HomePageContentState extends State<HomePageContent> {
+  final JobService _jobService = JobService();
+  final ProfileService _profileService = ProfileService();
+
   int _popularJobPage = 0;
   JobCategory? selectedCategory;
   List<Job> popularJobs = [];
   List<Job> recommendationJobs = [];
   bool isLoading = true;
+  String _userName = 'User';
+  String? _profilePhotoUrl;
 
   final List<Map<String, dynamic>> categories = [
     {
@@ -62,20 +71,7 @@ class _HomePageContentState extends State<HomePageContent> {
   }
 
   void _onJobsChanged() {
-    setState(() {
-      isLoading = true;
-    });
-    Future.delayed(Duration(milliseconds: 500), () {
-      setState(() {
-        if (selectedCategory != null) {
-          popularJobs = JobDataService.getJobsByCategory(selectedCategory!);
-        } else {
-          popularJobs = JobDataService.getPopularJobs(limit: 4);
-        }
-        recommendationJobs = JobDataService.getRandomJobs(5);
-        isLoading = false;
-      });
-    });
+    _loadJobs();
   }
 
   Future<void> _loadJobs() async {
@@ -83,17 +79,153 @@ class _HomePageContentState extends State<HomePageContent> {
       isLoading = true;
     });
 
-    // Simulate loading delay
-    await Future.delayed(Duration(milliseconds: 500));
-    setState(() {
-      if (selectedCategory != null) {
-        popularJobs = JobDataService.getJobsByCategory(selectedCategory!);
-      } else {
-        popularJobs = JobDataService.getPopularJobs(limit: 4);
+    try {
+      // Load profile (optional, continue if fails)
+      Map<String, dynamic>? profile;
+      try {
+        profile = await _profileService.getProfile();
+        print('Profile loaded: ${profile?['full_name']}');
+      } catch (e) {
+        print('Could not load profile: $e');
       }
-      recommendationJobs = JobDataService.getRandomJobs(5);
-      isLoading = false;
-    });
+
+      // Load jobs from Supabase
+      final jobs = await _jobService.getJobs(activeOnly: true);
+      print('Jobs loaded: ${jobs.length} jobs');
+
+      // Load favorites (only if user is logged in)
+      Set<String> favoriteIds = {};
+      try {
+        final favorites = await _jobService.getFavoriteJobs();
+        print('Favorites loaded: ${favorites.length} favorites');
+        favoriteIds =
+            favorites
+                .where((fav) => fav['jobs'] != null)
+                .map((fav) => fav['jobs']['id'] as String)
+                .toSet();
+      } catch (e) {
+        print('Could not load favorites (user might not be logged in): $e');
+        // Continue without favorites
+      }
+
+      // Convert to Job models
+      final allJobs = _convertToJobModels(jobs, favoriteIds);
+
+      if (mounted) {
+        setState(() {
+          _userName = profile?['full_name']?.split(' ')[0] ?? 'User';
+          _profilePhotoUrl = profile?['profile_photo_url'];
+
+          // Filter by category if selected
+          if (selectedCategory != null) {
+            // Popular jobs dari category yang dipilih
+            popularJobs =
+                allJobs
+                    .where((job) => job.category == selectedCategory)
+                    .take(4)
+                    .toList();
+            // Recommendation jobs dari semua category (random/shuffle)
+            final shuffledJobs = List<Job>.from(allJobs)..shuffle();
+            recommendationJobs = shuffledJobs.take(5).toList();
+          } else {
+            popularJobs = allJobs.take(4).toList();
+            recommendationJobs = allJobs.skip(4).take(5).toList();
+          }
+
+          isLoading = false;
+        });
+      }
+    } catch (e, stackTrace) {
+      print('Error loading jobs: $e');
+      print('Stack trace: $stackTrace');
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading jobs: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  List<Job> _convertToJobModels(
+    List<Map<String, dynamic>> supabaseJobs,
+    Set<String> favoriteIds,
+  ) {
+    return supabaseJobs.map((jobData) {
+      print('Converting job: ${jobData['title']}');
+      print('Job data keys: ${jobData.keys.toList()}');
+      final company = jobData['companies'];
+      print('Company: ${company?['name']}');
+      return Job(
+        id: jobData['id'],
+        title: jobData['title'] ?? 'Unknown',
+        company: Company(
+          id: company['id'],
+          name: company['name'] ?? 'Unknown Company',
+          logoUrl: company['logo_url'] ?? '',
+          location: company['location'] ?? '',
+          description: company['description'] ?? company['industry'] ?? '',
+        ),
+        category: _parseCategory(jobData['category']),
+        type: _parseJobType(jobData['type']),
+        location: jobData['location'] ?? '',
+        minSalary: (jobData['min_salary'] ?? 0).toDouble(),
+        maxSalary: (jobData['max_salary'] ?? 0).toDouble(),
+        description: jobData['description'] ?? '',
+        requirements: [],
+        postedDate: DateTime.parse(jobData['posted_date']),
+        deadlineDate: DateTime.parse(jobData['deadline_date']),
+        isBookmarked: favoriteIds.contains(jobData['id']),
+        tags: [],
+        capacity: jobData['capacity'] ?? 1,
+        startDate:
+            jobData['start_date'] != null
+                ? DateTime.parse(jobData['start_date'])
+                : DateTime.now(),
+        experience: jobData['experience_required'] ?? '',
+        jobLevel: jobData['job_level'] ?? '',
+      );
+    }).toList();
+  }
+
+  JobCategory _parseCategory(String? category) {
+    switch (category?.toLowerCase()) {
+      case 'frontend':
+        return JobCategory.frontendDevelopment;
+      case 'backend':
+        return JobCategory.backendDevelopment;
+      case 'fullstack':
+      case 'mobile':
+        return JobCategory.softwareDevelopment;
+      case 'ui_ux':
+        return JobCategory.uiuxDesign;
+      case 'devops':
+        return JobCategory.devopsCloud;
+      default:
+        return JobCategory.softwareDevelopment;
+    }
+  }
+
+  JobType _parseJobType(String? type) {
+    switch (type?.toLowerCase()) {
+      case 'full_time':
+        return JobType.fullTime;
+      case 'part_time':
+        return JobType.partTime;
+      case 'contract':
+        return JobType.contract;
+      case 'freelance':
+        return JobType.freelance;
+      case 'internship':
+        return JobType.internship;
+      default:
+        return JobType.fullTime;
+    }
   }
 
   void _onCategorySelected(JobCategory category) {
@@ -118,18 +250,28 @@ class _HomePageContentState extends State<HomePageContent> {
     );
   }
 
-  void _toggleBookmark(Job job) {
+  Future<void> _toggleBookmark(Job job) async {
     HapticFeedback.lightImpact();
-    JobDataService.toggleBookmark(job);
-    setState(() {
-      // Always reload job lists from JobDataService to sync all components
-      if (selectedCategory != null) {
-        popularJobs = JobDataService.getJobsByCategory(selectedCategory!);
+
+    try {
+      final isFavorited = await _jobService.isFavorited(job.id);
+
+      if (isFavorited) {
+        await _jobService.removeFromFavorites(job.id);
       } else {
-        popularJobs = JobDataService.getPopularJobs(limit: 4);
+        await _jobService.addToFavorites(job.id);
       }
-      recommendationJobs = JobDataService.getRandomJobs(5);
-    });
+
+      // Reload jobs to update bookmark status
+      await _loadJobs();
+    } catch (e) {
+      print('Error toggling bookmark: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to update favorite')));
+      }
+    }
   }
 
   @override
@@ -236,19 +378,22 @@ class _HomePageContentState extends State<HomePageContent> {
                 color: AppColors.primaryBlue,
               ),
               child: ClipOval(
-                child: Image.asset(
-                  'assets/images/profile_picture.png',
-                  width: 40,
-                  height: 40,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Icon(
-                      LucideIcons.user,
-                      color: Colors.white,
-                      size: 20,
-                    );
-                  },
-                ),
+                child:
+                    _profilePhotoUrl != null
+                        ? Image.network(
+                          _profilePhotoUrl!,
+                          width: 40,
+                          height: 40,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(
+                              LucideIcons.user,
+                              color: Colors.white,
+                              size: 20,
+                            );
+                          },
+                        )
+                        : Icon(LucideIcons.user, color: Colors.white, size: 20),
               ),
             ),
             SizedBox(width: 10),
@@ -267,7 +412,7 @@ class _HomePageContentState extends State<HomePageContent> {
                         stops: [0.0, 1.0],
                       ).createShader(bounds),
                   child: Text(
-                    "Ryo",
+                    _userName,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -497,6 +642,36 @@ class _HomePageContentState extends State<HomePageContent> {
                 margin: EdgeInsets.only(bottom: 12),
               ),
             ],
+          )
+        else if (recommendationJobs.isEmpty)
+          Container(
+            height: 200,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.white,
+              border: Border.all(color: Color(0xFFE5E7EB), width: 1),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    LucideIcons.briefcase,
+                    size: 48,
+                    color: AppColors.mediumGrey,
+                  ),
+                  SizedBox(height: 12),
+                  Text(
+                    "No jobs found",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.mediumGrey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           )
         else if (recommendationJobs.isNotEmpty)
           ...recommendationJobs

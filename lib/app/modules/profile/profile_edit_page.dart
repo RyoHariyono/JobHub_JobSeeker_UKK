@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jobhub_jobseeker_ukk/core/theme/app_color.dart';
+import 'package:jobhub_jobseeker_ukk/data/services/profile_service.dart';
 import 'package:jobhub_jobseeker_ukk/shared/widgets/bottom_button.dart';
 import 'package:jobhub_jobseeker_ukk/shared/widgets/date_input.dart';
 import 'package:jobhub_jobseeker_ukk/shared/widgets/notification.dart';
@@ -15,6 +16,8 @@ class ProfileEditPage extends StatefulWidget {
 }
 
 class _ProfileEditPageState extends State<ProfileEditPage> {
+  final ProfileService _profileService = ProfileService();
+
   // Controllers untuk text fields
   late TextEditingController _nameController;
   late TextEditingController _emailController;
@@ -29,8 +32,13 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   // Untuk menyimpan gender yang dipilih
   String? selectedGender;
 
-  // Track changes
+  // Track changes dan loading
   bool _hasChanges = false;
+  bool _isLoading = true;
+  bool _isSaving = false;
+
+  // Store original data
+  Map<String, dynamic>? _originalData;
 
   @override
   void initState() {
@@ -45,23 +53,119 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     _emailController.addListener(_checkForChanges);
     _phoneController.addListener(_checkForChanges);
     _addressController.addListener(_checkForChanges);
+
+    _loadProfileData();
+  }
+
+  Future<void> _loadProfileData() async {
+    try {
+      final profile = await _profileService.getProfile();
+      if (profile != null) {
+        setState(() {
+          _originalData = Map.from(profile);
+          _nameController.text = profile['full_name'] ?? '';
+          _emailController.text = profile['email'] ?? '';
+          _phoneController.text = profile['phone'] ?? '';
+          _addressController.text = profile['address'] ?? '';
+
+          // Parse birth date
+          if (profile['birth_date'] != null) {
+            final birthDate = DateTime.parse(profile['birth_date']);
+            selectedDay = birthDate.day.toString();
+            selectedMonth = _getMonthName(birthDate.month);
+            selectedYear = birthDate.year.toString();
+          }
+
+          selectedGender = profile['gender'];
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to load profile: $e')));
+      }
+    }
+  }
+
+  String _getMonthName(int month) {
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    return months[month - 1];
   }
 
   void _checkForChanges() {
+    if (_originalData == null) {
+      setState(() => _hasChanges = false);
+      return;
+    }
+
     setState(() {
       _hasChanges =
-          _nameController.text.isNotEmpty ||
-          _emailController.text.isNotEmpty ||
-          _phoneController.text.isNotEmpty ||
-          _addressController.text.isNotEmpty ||
-          selectedDay != null ||
-          selectedMonth != null ||
-          selectedYear != null ||
-          selectedGender != null;
+          _nameController.text != (_originalData!['full_name'] ?? '') ||
+          _emailController.text != (_originalData!['email'] ?? '') ||
+          _phoneController.text != (_originalData!['phone'] ?? '') ||
+          _addressController.text != (_originalData!['address'] ?? '') ||
+          selectedGender != _originalData!['gender'] ||
+          _hasBirthDateChanged();
     });
   }
 
-  void _onUpdatePressed() {
+  bool _hasBirthDateChanged() {
+    if (_originalData!['birth_date'] == null) {
+      return selectedDay != null &&
+          selectedMonth != null &&
+          selectedYear != null;
+    }
+
+    final originalDate = DateTime.parse(_originalData!['birth_date']);
+    if (selectedDay == null || selectedMonth == null || selectedYear == null) {
+      return false;
+    }
+
+    final monthNum = _getMonthNumber(selectedMonth!);
+    final newDate = DateTime(
+      int.parse(selectedYear!),
+      monthNum,
+      int.parse(selectedDay!),
+    );
+
+    return originalDate != newDate;
+  }
+
+  int _getMonthNumber(String monthName) {
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    return months.indexOf(monthName) + 1;
+  }
+
+  Future<void> _onUpdatePressed() async {
     final screenWidth = MediaQuery.of(context).size.width;
     final dialogWidth = screenWidth > 400 ? 343.0 : screenWidth * 0.85;
 
@@ -118,19 +222,70 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                             ),
                             elevation: 0,
                           ),
-                          onPressed: () {
-                            setState(() {
-                              _hasChanges = false;
-                            });
-
+                          onPressed: () async {
                             Navigator.of(context).pop();
 
-                            AppToast.showSuccess(
-                              context,
-                              title: 'Profile updated successfully!',
-                              description:
-                                  'Your profile has been updated and is now visible to employers.',
-                            );
+                            setState(() => _isSaving = true);
+
+                            try {
+                              DateTime? birthDate;
+                              if (selectedDay != null &&
+                                  selectedMonth != null &&
+                                  selectedYear != null) {
+                                final monthNum = _getMonthNumber(
+                                  selectedMonth!,
+                                );
+                                birthDate = DateTime(
+                                  int.parse(selectedYear!),
+                                  monthNum,
+                                  int.parse(selectedDay!),
+                                );
+                              }
+
+                              await _profileService.updateProfile(
+                                fullName:
+                                    _nameController.text.isNotEmpty
+                                        ? _nameController.text
+                                        : null,
+                                phone:
+                                    _phoneController.text.isNotEmpty
+                                        ? _phoneController.text
+                                        : null,
+                                address:
+                                    _addressController.text.isNotEmpty
+                                        ? _addressController.text
+                                        : null,
+                                birthDate: birthDate,
+                                gender: selectedGender,
+                              );
+
+                              if (mounted) {
+                                setState(() {
+                                  _hasChanges = false;
+                                  _isSaving = false;
+                                });
+
+                                AppToast.showSuccess(
+                                  context,
+                                  title: 'Profile updated successfully!',
+                                  description:
+                                      'Your profile has been updated and is now visible to employers.',
+                                );
+
+                                // Reload data
+                                await _loadProfileData();
+                              }
+                            } catch (e) {
+                              if (mounted) {
+                                setState(() => _isSaving = false);
+
+                                AppToast.showError(
+                                  context,
+                                  title: 'Update failed',
+                                  description: e.toString(),
+                                );
+                              }
+                            }
                           },
                           child: Text(
                             "I'm sure",
@@ -225,6 +380,37 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          toolbarHeight: 70,
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(
+              LucideIcons.chevronLeft,
+              color: AppColors.darkGrey,
+              size: 24,
+            ),
+            onPressed: () => context.go('/profile'),
+          ),
+          title: Text(
+            "Edit Profile",
+            style: TextStyle(
+              fontSize: _getLabelFontSize(context) + 2,
+              fontWeight: FontWeight.w600,
+              color: AppColors.darkGrey,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primaryBlue),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -426,9 +612,12 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         ),
       ),
       bottomNavigationBar: BottomButton(
-        label: _hasChanges ? 'Update data' : 'Edit your data',
-        onPressed: _onUpdatePressed,
-        isDisabled: !_hasChanges,
+        label:
+            _isSaving
+                ? 'Updating...'
+                : (_hasChanges ? 'Update data' : 'Edit your data'),
+        onPressed: () => _onUpdatePressed(),
+        isDisabled: !_hasChanges || _isSaving,
       ),
     );
   }
